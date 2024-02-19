@@ -31,6 +31,25 @@ namespace ShopProject.Controllers
         [Route("ShowDetails")]
         public IActionResult ShowDetails(UsersModel user)
         {
+            {//sql
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+                    string sqlQuery = "INSERT INTO USERS VALUES(@value1,@value2)";
+                    using (SqlCommand command = new SqlCommand(sqlQuery, connection))
+                    {
+                        command.Parameters.AddWithValue("@value1", user.UserName);
+                        command.Parameters.AddWithValue("@value2", user.Password);
+                        int rowsAffected = command.ExecuteNonQuery();
+                        
+                        return View("ShowDetails", user);
+                        
+                        
+
+                    }
+                }
+
+            }
             return View("ShowDetails", user);
         }
     }
