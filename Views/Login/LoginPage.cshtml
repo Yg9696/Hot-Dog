@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@model ShopProject.Models.UsersModel
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -49,12 +51,12 @@
     </style>
 </head>
 <body>
-    <form action="/login" method="post">
+    <form action="ShowDetails" method="post">
         <h2>Login</h2>
         <label for="username">Username</label>
-        <input type="text" id="username" name="username" required>
+        <input type="text" id="username" name="UserName" required>
         <label for="password">Password</label>
-        <input type="password" id="password" name="password" required>
+        <input type="password" id="password" name="Password" required>
         <input type="submit" value="Login">
     </form>
 </body>

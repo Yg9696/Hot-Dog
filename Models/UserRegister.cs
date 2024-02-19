@@ -4,11 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 
+
 namespace ShopProject.Models
 {
     public class UserRegister
     {
-        //hello
+        [Key]
         public int UserID { get; set; }
         [Required(ErrorMessage ="First Name is required.")]
         public string FirstName { get; set; }
