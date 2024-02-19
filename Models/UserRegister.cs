@@ -8,7 +8,7 @@ namespace ShopProject.Models
 {
     public class UserRegister
     {
-        [Key]
+        
         public int UserID { get; set; }
         [Required(ErrorMessage ="First Name is required.")]
         public string FirstName { get; set; }
