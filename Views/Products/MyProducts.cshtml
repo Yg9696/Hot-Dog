@@ -1,0 +1,87 @@
+﻿@model List<ProductsModel>
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products Page</title>
+    <style>
+        
+
+        .search-container, .filter-sort-container {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+            .search-container input[type="text"], .filter-sort-container select {
+                width: 50%;
+                padding: 10px;
+                margin-right: 10px;
+            }
+
+            .search-container button, .filter-sort-container button {
+                padding: 10px 20px;
+                background-color: #333;
+                color: white;
+                border: none;
+                cursor: pointer;
+            }
+
+        .filter-sort-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Welcome to Our Products Page</h1>
+    </div>
+    @using (Html.BeginForm("FilteredProducts", "Products", FormMethod.Post)){
+    <div class="search-container">
+        <input name="searchedInput" type="text" placeholder="Search for products...">
+        <button>Search</button>
+    </div>
+    }
+    @using (Html.BeginForm("SortProducts", "Products", FormMethod.Post))
+        {
+    <div class="filter-sort-container">
+        
+        <select id="sortOptions" name="selectedFilter">
+            <option value="name">Sort by Name</option>
+            <option value="price">Sort by Price</option>
+            <option value="collection">Filter by Collection</option>
+            <option value="stock">Filter by Stock</option>
+        </select>
+        
+            <button type="submit">Sort</button>
+        
+    </div>
+        }
+    <div class="container">
+        @foreach (ProductsModel product in Model)
+        {
+            <div class="product">
+                <h2 class="product-name">@product.ProductName</h2>
+                <p class="product-id">ID: @product.ProductId</p>
+                <p class="product-price">Price: @product.Price</p>
+                <p class="product-Collection">Collection: @product.Collection</p>
+                <p class="product-Description">Description: @product.Description</p>
+                <p class="product-Stock">Stock: @product.Stock</p>
+            </div>
+        }
+    </div>
+
+    <script>
+        function applySortFilter() {
+            var selectedOption = document.getElementById('sortOptions').value;
+            console.log("Selected Option: " + selectedOption);
+            return view("MyProducts",Model.filter)
+            // Implement the sorting/filtering logic based on selectedOption
+        }
+    </script>
+</body>
+</html>
