@@ -56,7 +56,7 @@ namespace ShopProject.Controllers
 
                 // Redirect user to login page or any other page
                 //return RedirectToAction("Index");
-                return View("LoginSucceed");
+                return View("LoginPage");
                 }
                 else
                 {
