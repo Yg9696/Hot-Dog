@@ -85,8 +85,19 @@ namespace ShopProject.Controllers
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 connection.Open();
-                string sqlQuery = "INSERT INTO USERS VALUES(@value1,@value2)";
-                using (SqlCommand command = new SqlCommand(sqlQuery, connection))
+                string sqlQueryInit = $"SELECT CASE WHEN EXISTS (SELECT * FROM sys.tables WHERE name = 'Users' AND schema_id = SCHEMA_ID('dbo')) THEN 1 ELSE 0 END";
+                string sqlQuery = "INSERT INTO Users VALUES(@value1,@value2)";
+                using (SqlCommand command = new SqlCommand(sqlQueryInit, connection))
+                {
+                    if ((int)command.ExecuteScalar() == 0)
+                    {
+                        sqlQueryInit = $"CREATE TABLE Users(Id INT PRIMARY KEY IDENTITY,UserName VARCHAR(30), Password VARCHAR(30))";
+                        command.CommandText = sqlQueryInit;
+                        command.ExecuteNonQuery();
+                    }
+
+                }
+                        using (SqlCommand command = new SqlCommand(sqlQuery, connection))
                 {
                     command.Parameters.AddWithValue("@value1", username);
                     command.Parameters.AddWithValue("@value2", password);
@@ -99,10 +110,23 @@ namespace ShopProject.Controllers
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 connection.Open();
-                string sqlQuery = "INSERT INTO ACCOUNTS VALUES(@value1,@value2,@value3,@value4,@value5,@value6,@Value7)";
+                string sqlQueryInit = $"SELECT CASE WHEN EXISTS (SELECT * FROM sys.tables WHERE name = 'Accounts' AND schema_id = SCHEMA_ID('dbo')) THEN 1 ELSE 0 END";
+                string sqlQuery = "INSERT INTO ACCOUNTS VALUES(@value2,@value3,@value4,@value5,@value6,@Value7)";
+                using (SqlCommand command = new SqlCommand(sqlQueryInit, connection))
+                {
+                    if ((int)command.ExecuteScalar() == 0)
+                    {
+                        sqlQueryInit = $"CREATE TABLE Accounts(Id INT PRIMARY KEY IDENTITY,name VARCHAR(30)," +
+                            $" lastname VARCHAR(30),username VARCHAR(30),password VARCHAR(30),email VARCHAR(30),phone VARCHAR(30))";
+                        command.CommandText = sqlQueryInit;
+                        command.ExecuteNonQuery();
+                    }
+
+                }
+             
                 using (SqlCommand command = new SqlCommand(sqlQuery, connection))
                 {
-                    command.Parameters.AddWithValue("@value1",id);
+                   
                     command.Parameters.AddWithValue("@value2", name);
                     command.Parameters.AddWithValue("@value3", lastname);
                     command.Parameters.AddWithValue("@value4", username);
@@ -123,11 +147,17 @@ namespace ShopProject.Controllers
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 connection.Open();
-
-                string sqlQuery = "SELECT COUNT(*) FROM USERS WHERE UserName = @username AND Password=@password";
+                string sqlQuery = $"SELECT CASE WHEN EXISTS (SELECT * FROM sys.tables WHERE name = 'Users' AND schema_id = SCHEMA_ID('dbo')) THEN 1 ELSE 0 END";
 
                 using (SqlCommand command = new SqlCommand(sqlQuery, connection))
                 {
+                    if ((int)command.ExecuteScalar() == 0)
+                    {
+                        return false;
+                    }
+                   sqlQuery = "SELECT COUNT(*) FROM USERS WHERE UserName = @username AND Password=@password";
+
+                    command.CommandText=sqlQuery;
                     command.Parameters.AddWithValue("@username", username);
                     command.Parameters.AddWithValue("@password", password);
                     int count = (int)command.ExecuteScalar();
