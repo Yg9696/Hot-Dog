@@ -25,9 +25,11 @@ namespace ShopProject.Controllers
         }
 
 
-        public IActionResult AddToCart()
+        public IActionResult AddToCart(int productId)
         {
-            return View("MyProducts");
+            shop.AddItemTo(new  {UserId=1234,ProductId= "123"},"ShopList");
+
+            return View("MyProducts",list);
         }
 
 
