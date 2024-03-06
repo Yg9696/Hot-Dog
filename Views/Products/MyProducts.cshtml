@@ -8,6 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Products Page</title>
     <style>
+
         body {
             font-family: Arial, sans-serif;
             background-image: url('/picpic.jpg'); /* Specify the path to your background image */
@@ -18,6 +19,9 @@
             text-align:center;
             color:orange;
         }
+
+        
+
 
         .search-container, .filter-sort-container {
             margin-bottom: 20px;
@@ -49,6 +53,7 @@
     <div class="header">
         <h1>Welcome to Our Products Page</h1>
     </div>
+
     @using (Html.BeginForm("FilteredProducts", "Products", FormMethod.Post))
     {
         <div class="search-container">
@@ -109,11 +114,14 @@
     
 
 
+
     <script>
         function applySortFilter() {
             var selectedOption = document.getElementById('sortOptions').value;
             console.log("Selected Option: " + selectedOption);
+
             return view("MyProducts", Model.filter)
+
             // Implement the sorting/filtering logic based on selectedOption
         }
     </script>

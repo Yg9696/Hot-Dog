@@ -24,10 +24,12 @@ namespace ShopProject.Controllers
             list = shop.GetListOf("Products").Cast<ProductsModel>().ToList();
         }
 
+
         public IActionResult AddToCart()
         {
             return View("MyProducts");
         }
+
 
         public IActionResult AddProduct()
         {;
