@@ -23,6 +23,10 @@ namespace ShopProject.Controllers
             connectionString = _configuration.GetConnectionString("myConnect");
 
         }
+        public IActionResult Logout()
+        {
+            return View("LoginPage");
+        }
         public IActionResult Index()
         {
             UsersModel user = new UsersModel();
@@ -41,7 +45,7 @@ namespace ShopProject.Controllers
                 }
                 else
                 {
-                    return View("LoginSucceed");
+                    return View("LoginSucceed",user);
                 }
 
             }
