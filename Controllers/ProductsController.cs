@@ -24,6 +24,15 @@ namespace ShopProject.Controllers
             list = shop.GetListOf("Products").Cast<ProductsModel>().ToList();
         }
 
+
+        public IActionResult AddToCart(int productId)
+        {
+            shop.AddItemTo(new  {UserId=1234,ProductId= "123"},"ShopList");
+
+            return View("MyProducts",list);
+        }
+
+
         public IActionResult AddProduct()
         {;
             ProductsModel product = new ProductsModel();
