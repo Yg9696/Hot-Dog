@@ -66,6 +66,7 @@ namespace ShopProject.Controllers
             }
             return View("MyProducts", listTemp);
         }
+        [HttpPost]
         public IActionResult FilteredProducts(string searchedInput)
         {
             List<ProductsModel> listTemp = list;
@@ -77,9 +78,10 @@ namespace ShopProject.Controllers
             }
             return View("MyProducts", listTemp);
         }
-        public IActionResult ProductDetails(string productId)
+        public IActionResult ProductDetails(int id)
         {
-            ProductsModel product = list.FirstOrDefault(p => (p.ProductId).ToString() == productId);
+            
+            ProductsModel product = list.FirstOrDefault(p => (p.ProductId) == id);
             return View(product);
         }
     }
