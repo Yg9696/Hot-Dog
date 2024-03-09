@@ -5,6 +5,7 @@ using ShopProject.Models;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Security.Principal;
 using System.Threading.Tasks;
 
 namespace ShopProject.Services
@@ -44,8 +45,11 @@ namespace ShopProject.Services
                     case "products":
                         tableName = "Products";
                         break;
-                    case "shopList":
+                    case "shoplist":
                         tableName = "ShopList";
+                        break;
+                    case "accounts":
+                        tableName = "Accounts";
                         break;
                     default:
                         return new List<dynamic>();
@@ -82,11 +86,23 @@ namespace ShopProject.Services
                                         Stock = reader.GetInt32(reader.GetOrdinal("Stock"))
                                     };
                                     break;
-                                case "ShopList":
+                                case "shoplist":
                                     item = new
                                     {
                                         UserId = reader.GetInt32(reader.GetOrdinal("UserId")),
                                         ProductId = reader.GetString(reader.GetOrdinal("ProductId"))
+                                    };
+                                    break;
+                                case "accounts":
+                                    item = new AccountModel
+                                    {
+                                        UserID = reader.GetInt32(reader.GetOrdinal("Id")),
+                                        FirstName = reader.GetString(reader.GetOrdinal("name")),
+                                        LastName = reader.GetString(reader.GetOrdinal("lastname")),
+                                        UserName = reader.GetString(reader.GetOrdinal("username")),
+                                        Password = reader.GetString(reader.GetOrdinal("password")),
+                                        Email = reader.GetString(reader.GetOrdinal("email")),
+                                        PhoneNumber = reader.GetString(reader.GetOrdinal("phone"))
                                     };
                                     break;
 
@@ -109,7 +125,7 @@ namespace ShopProject.Services
             {
                 connection.Open();
                 string sqlQuery = $"SELECT CASE WHEN EXISTS (SELECT * FROM sys.tables WHERE name = '{tableName}' AND schema_id = SCHEMA_ID('dbo')) THEN 1 ELSE 0 END";
-
+                
                 using (SqlCommand command = new SqlCommand(sqlQuery, connection))
                 {
                     if ((int)command.ExecuteScalar() == 0)
@@ -131,6 +147,15 @@ namespace ShopProject.Services
 
                         command.CommandText = sqlQueryInit;
                         command.ExecuteNonQuery();
+                        if(tableName== "Products") {
+                            command.CommandText = $"SELECT CASE WHEN EXISTS (SELECT * FROM sys.tables WHERE name = 'Images' AND schema_id = SCHEMA_ID('dbo')) THEN 1 ELSE 0 END";
+                            if ((int)command.ExecuteScalar() == 0)
+                            {
+                                command.CommandText = $"CREATE TABLE Images(ImageId INT PRIMARY KEY IDENTITY, ImagePath VARCHAR(30),ProductId INT , FOREIGN KEY (ProductId) REFERENCES Products(ProductId))";
+                                command.ExecuteNonQuery();
+                            }
+                        }
+                        
                     }
 
 
@@ -146,6 +171,10 @@ namespace ShopProject.Services
                             command.Parameters.AddWithValue("collection", item.Collection);
                             command.Parameters.AddWithValue("@description", item.Description);
                             command.Parameters.AddWithValue("@stock", item.Stock);
+                            sqlQueryAdd = $"INSERT INTO Images VALUES(@ImagePath,@ProductId)";
+                            
+                            
+
                             break;
                         case "Users":
                             sqlQueryAdd = $"INSERT INTO {tableName} VALUES(@UserName,@Password)";
@@ -161,6 +190,17 @@ namespace ShopProject.Services
                     }
                     command.CommandText = sqlQueryAdd;
                     rowsAffected = command.ExecuteNonQuery();
+                    if (tableName =="Products")
+                    {
+                        sqlQueryAdd = $"INSERT INTO Images VALUES(@ImagePath,@ProductId)";
+                        foreach (string imagePath in item.PicturesPaths)
+                        {
+                            command.Parameters.AddWithValue("@ImagePath", imagePath);
+                            command.Parameters.AddWithValue("@ProductId", item.ProductId);
+                            command.CommandText = sqlQueryAdd;
+                            command.ExecuteNonQuery();
+                        }
+                    }
                 }
             }
 

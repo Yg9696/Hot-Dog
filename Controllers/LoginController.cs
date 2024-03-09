@@ -8,6 +8,9 @@ using System.Data;
 using System.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using ShopProject.Models;
+using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
+using ShopProject.Services;
 //using Oracle.ManagedDataAccess.Client; // If using Managed ODP.NET
 
 namespace ShopProject.Controllers
@@ -17,14 +20,17 @@ namespace ShopProject.Controllers
     {
         private readonly IConfiguration _configuration;
         string connectionString = "";
+        ShopService shop;
         public LoginController(IConfiguration configuration)
         {
             _configuration = configuration;
             connectionString = _configuration.GetConnectionString("myConnect");
+            shop = new ShopService(_configuration);
 
         }
         public IActionResult Logout()
         {
+            HttpContext.Session.Clear();
             return View("LoginPage");
         }
         public IActionResult Index()
@@ -45,13 +51,15 @@ namespace ShopProject.Controllers
                 }
                 else
                 {
-                    return View("LoginSucceed",user);
+                    AccountModel currentAccount=shop.GetListOf("Accounts").Cast<AccountModel>().ToList().FirstOrDefault(p=>p.UserName == user.UserName);///here
+                    HttpContext.Session.SetString("CurrentAccount", JsonConvert.SerializeObject(currentAccount));
+                    return View("LoginSucceed", currentAccount);
                 }
 
             }
         }
         //register action
-            public IActionResult Register(UserRegister user)
+            public IActionResult Register(AccountModel user)
             {
                 if (ModelState.IsValid)
                 {
@@ -69,10 +77,6 @@ namespace ShopProject.Controllers
                 }
             }
         
-
-
-
-
 
         public IActionResult REG()
         {
