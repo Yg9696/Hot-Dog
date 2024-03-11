@@ -25,7 +25,7 @@ namespace ShopProject.Controllers
         }
         public IActionResult Logout()
         {
-            return View("LoginPage");
+            return RedirectToAction("Index");
         }
         public IActionResult Index()
         {
@@ -60,8 +60,10 @@ namespace ShopProject.Controllers
 
                 // Redirect user to login page or any other page
                 //return RedirectToAction("Index");
-                return View("LoginPage");
-                }
+
+                // return View("LoginPage");
+                return RedirectToAction("Index");
+            }
                 else
                 {
                     // If model state is not valid, return to registration page with validation errors
