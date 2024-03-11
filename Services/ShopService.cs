@@ -171,8 +171,6 @@ namespace ShopProject.Services
                             command.Parameters.AddWithValue("collection", item.Collection);
                             command.Parameters.AddWithValue("@description", item.Description);
                             command.Parameters.AddWithValue("@stock", item.Stock);
-                            sqlQueryAdd = $"INSERT INTO Images VALUES(@ImagePath,@ProductId)";
-                            
                             
 
                             break;
@@ -190,17 +188,17 @@ namespace ShopProject.Services
                     }
                     command.CommandText = sqlQueryAdd;
                     rowsAffected = command.ExecuteNonQuery();
-                    if (tableName =="Products")
-                    {
-                        sqlQueryAdd = $"INSERT INTO Images VALUES(@ImagePath,@ProductId)";
-                        foreach (string imagePath in item.PicturesPaths)
-                        {
-                            command.Parameters.AddWithValue("@ImagePath", imagePath);
-                            command.Parameters.AddWithValue("@ProductId", item.ProductId);
-                            command.CommandText = sqlQueryAdd;
-                            command.ExecuteNonQuery();
-                        }
-                    }
+                    //if (tableName =="Products")
+                    //{
+                    //    sqlQueryAdd = $"INSERT INTO Images VALUES(@ImagePath,@ProductId)";
+                    //    foreach (string imagePath in item.PicturesPaths)
+                    //    {
+                    //        command.Parameters.AddWithValue("@ImagePath", imagePath);
+                    //        command.Parameters.AddWithValue("@ProductId", item.ProductId);
+                    //        command.CommandText = sqlQueryAdd;
+                    //        command.ExecuteNonQuery();
+                    //    }
+                    //}
                 }
             }
 
@@ -219,34 +217,4 @@ namespace ShopProject.Services
     }
 
 }
-//public class ApplicationUser
-//{
-//    public string UserId { get; set; }
-//    public string UserName { get; set; }
-//}
-//public class UserMiddleware
-//{
-//    private readonly RequestDelegate _next;
-
-//    public UserMiddleware(RequestDelegate next)
-//    {
-//        _next = next;
-//    }
-
-//    public async Task Invoke(HttpContext httpContext)
-//    {
-//        // Fetch user information from wherever it's stored
-//        // For example, from session, JWT token, database, etc.
-//        ApplicationUser user = GetUserFromSomeWhere();
-
-//        // Add the user object to the HttpContext
-//        httpContext.Items["CurrentUser"] = user;
-
-//        await _next(httpContext);
-//    }
-//}
-
-
-
-
 
