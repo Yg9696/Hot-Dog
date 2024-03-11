@@ -24,6 +24,20 @@ namespace ShopProject.Controllers
             list = shop.GetListOf("Products").Cast<ProductsModel>().ToList();
         }
 
+        public IActionResult Cart()
+        {
+            return View("cart");
+        }
+        public void RemoveFromCart(int productId)
+        {
+           
+            TempData["Message"] = "The product was removed successfully"; 
+
+             
+        }
+
+
+
 
         public IActionResult AddToCart(int productId)
         {

@@ -14,6 +14,9 @@
             background-image: url('/picpic.jpg'); /* Specify the path to your background image */
             background-size: cover; /* Cover the entire viewport */
             background-position: center; /* Center the background image */
+            position: relative; /* Ensure positioning of cart button relative to body */
+            height: 100vh; /* Ensure full height of background */
+            margin: 0; /* Remove default margin */
         }
         .header{
             text-align:center;
@@ -47,6 +50,15 @@
             justify-content: center;
             gap: 10px;
         }
+        .cart-button {
+            position: absolute;
+            top: 150px;
+            right: 450px;
+            cursor: pointer;
+            width: 50px; /* Adjust width of the cart button */
+            height: auto; /* Automatically adjust height based on width */
+        }
+
     </style>
 </head>
 <body>
@@ -77,42 +89,39 @@
         </div>
     }
 
-<div class="container text-center">
-    @for (int i = 0; i < Model.Count; i += 4)
-    {
-        <div class="row">
-            @for (int j = i; j < Math.Min(i + 4, Model.Count); j++)
-            {
-                <div class="col">
-                    <div class="product">
-                        <h2 class="product-name">@Model[j].ProductName</h2>
-                        <p class="product-id">ID: @Model[j].ProductId</p>
-                        <p class="product-price">Price: @Model[j].Price</p>
-                        <p class="product-Collection">Collection: @Model[j].Collection</p>
-                        <p class="product-Description">Description: @Model[j].Description</p>
-                        <p class="product-Stock">Stock: @Model[j].Stock</p>
-                        <img src="/bonzopic.jpg" class="product-image" style="width: 100px; height: auto;">
-                        <form asp-controller="Products" asp-action="AddToCart" method="post">
-                            <input type="hidden" name="productId" value="@Model[j].ProductId" />
-                            <button type="submit" class="btn btn-primary">Add to Cart</button>
-                        </form>
+    <a href="@Url.Action("Cart", "Products")">
+        <img src="/cart.jpg" alt="Cart" class="cart-button">
+    </a>
+
+    <div class="container text-center">
+        @for (int i = 0; i < Model.Count; i += 4)
+        {
+            <div class="row">
+                @for (int j = i; j < Math.Min(i + 4, Model.Count); j++)
+                {
+                    <div class="col">
+                        <div class="product">
+                            <h2 class="product-name">@Model[j].ProductName</h2>
+                            <p class="product-id">ID: @Model[j].ProductId</p>
+                            <p class="product-price">Price: @Model[j].Price</p>
+                            <p class="product-Collection">Collection: @Model[j].Collection</p>
+                            <p class="product-Description">Description: @Model[j].Description</p>
+                            <p class="product-Stock">Stock: @Model[j].Stock</p>
+                            <img src="/bonzopic.jpg" class="product-image" style="width: 100px; height: auto;">
+                            <form asp-controller="Products" asp-action="AddToCart" method="post">
+                                <input type="hidden" name="productId" value="@Model[j].ProductId" />
+                                <button type="submit" class="btn btn-primary">Add to Cart</button>
+                            </form>
+                        </div>
                     </div>
-                </div>
-            }
-        </div>
-    }
-    <form id="logoutForm" asp-controller="Login" asp-action="Logout" method="post">
-        <button type="submit" class="btn btn-primary">Log Out</button>
-    </form>
+                }
+            </div>
+        }
+        <form id="logoutForm" asp-controller="Login" asp-action="Logout" method="post">
+            <button type="submit" class="btn btn-primary">Log Out</button>
+        </form>
 
-</div>
-
-
-
-
-
-    
-
+    </div>
 
 
     <script>

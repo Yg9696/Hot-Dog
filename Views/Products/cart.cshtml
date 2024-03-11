@@ -1,5 +1,68 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart Page</title>
+    <style>
+        body {
+            background-image: url('/picpic.jpg'); /* Set background image */
+            background-size: cover; /* Cover the entire viewport */
+            background-position: center; /* Center the background image */
+        }
+
+        .container {
+            background-color: transparent; /* Make container background transparent */
+        }
+
+        .col {
+            background-color: transparent; /* Set column background color to transparent */
+            color: orange; /* Set text color to orange */
+        }
+        .top{
+            text-align:center;
+            color:orangered;
+        }
+    </style>
+</head>
+<body>
+    <div class="top">
+        <h1>Welcome to the Cart Page</h1>
+    </div>
+
+    @{
+        int counter = 20;
+    }
+
+    @{
+        string message = TempData["Message"] as string; // Get message from TempData
+    }
+
+    @if (!string.IsNullOrEmpty(message))
+    {
+        <div class="alert alert-success">@message</div> <!-- Display success message -->
+    }
+
+    <div class="container text-center">
+        @for (int i = 0; i < counter; i += 4)
+        {
+            <div class="row">
+                @for (int j = i; j < Math.Min(i + 4, counter); j++)
+                {
+                    <div class="col">
+                        <div class="product">
+                            <p>Product Text</p> <!-- Replace with actual product text -->
+                            <form asp-controller="Products" asp-action="RemoveFromCart" method="post">
+                                <input type="hidden" name="productId" value="111" /> <!-- Set product ID -->
+                                <button type="submit">Remove from Cart</button>
+                            </form>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+
+
+</body>
+</html>
