@@ -31,23 +31,7 @@ namespace ShopProject.Controllers
             list = shop.GetListOf("Products").Cast<ProductsModel>().ToList();
             //
         }
-        //
-        //public IActionResult Home(ProductsModel product)
-        //{
-        //    if (product != null && ModelState.IsValid)
-        //    {
-        //        shop.AddItemTo(product, "Products");
-        //    }
-        //    return RedirectToAction("HomePage");
-        //}
-        //[HttpGet]
-        //public IActionResult Home()
-        //{
-
-        //    return View(shop.GetListOf("Products").Cast<ProductsModel>().ToList());
-        //}
-        //[HttpPost]
-        //
+       
 
 
         public IActionResult Payment()
