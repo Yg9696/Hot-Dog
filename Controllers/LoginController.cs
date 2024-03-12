@@ -8,6 +8,7 @@ using System.Data;
 using System.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using ShopProject.Models;
+using ShopProject.Services;
 //using Oracle.ManagedDataAccess.Client; // If using Managed ODP.NET
 
 namespace ShopProject.Controllers
@@ -17,12 +18,44 @@ namespace ShopProject.Controllers
     {
         private readonly IConfiguration _configuration;
         string connectionString = "";
+        //
+        private readonly ShopService shop;
+        List<ProductsModel> list;
+        //
         public LoginController(IConfiguration configuration)
         {
             _configuration = configuration;
             connectionString = _configuration.GetConnectionString("myConnect");
-
+            //
+            shop = new ShopService(_configuration);
+            list = shop.GetListOf("Products").Cast<ProductsModel>().ToList();
+            //
         }
+        //
+        //public IActionResult Home(ProductsModel product)
+        //{
+        //    if (product != null && ModelState.IsValid)
+        //    {
+        //        shop.AddItemTo(product, "Products");
+        //    }
+        //    return RedirectToAction("HomePage");
+        //}
+        //[HttpGet]
+        //public IActionResult Home()
+        //{
+
+        //    return View(shop.GetListOf("Products").Cast<ProductsModel>().ToList());
+        //}
+        //[HttpPost]
+        //
+
+
+        public IActionResult Payment()
+        {
+            return View("Payment");
+        }
+
+
         public IActionResult Home(UsersModel User)
         {
             UsersModel user = new UsersModel();
