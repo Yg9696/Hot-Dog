@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ShopProject.Models
 {
-    public class UserRegister
+    public class AccountModel
     {
         [Key]
         public int UserID { get; set; }
