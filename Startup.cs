@@ -51,7 +51,7 @@ namespace ShopProject
             app.UseSession();
 
             app.UseAuthorization();
-            //app.UseMiddleware<CheckUserSessionMiddleware>(); //uncomment for currentuser check
+           //app.UseMiddleware<CheckUserSessionMiddleware>(); //uncomment for currentuser check
 
             app.UseEndpoints(endpoints =>
             {
