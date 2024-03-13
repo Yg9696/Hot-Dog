@@ -26,6 +26,10 @@ namespace ShopProject.Controllers
             _logger = logger;
         }
 
+        public IActionResult Admin()
+        {
+            return View("Admin");
+        }
         public IActionResult Index()
         {
            
