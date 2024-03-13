@@ -74,7 +74,7 @@ namespace ShopProject.Controllers
             }
         }
         //register action
-            public IActionResult Register(UserRegister user)
+            public IActionResult Register(AccountModel user)
             {
                 if (ModelState.IsValid)
                 {
