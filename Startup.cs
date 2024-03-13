@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using ShopProject.Filters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,8 +48,10 @@ namespace ShopProject
             app.UseStaticFiles();
 
             app.UseRouting();
+            app.UseSession();
 
             app.UseAuthorization();
+            //app.UseMiddleware<CheckUserSessionMiddleware>(); //uncomment for currentuser check
 
             app.UseEndpoints(endpoints =>
             {
