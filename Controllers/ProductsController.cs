@@ -125,5 +125,10 @@ namespace ShopProject.Controllers
             ProductsModel product = list.FirstOrDefault(p => (p.ProductId) == id);
             return View(product);
         }
+        public IActionResult ProductsCollection(string collection)
+        {
+            List<ProductsModel> l = list.Where(p => p.Collection == collection).ToList();
+            return View("MyProducts",list.Where(p => p.Collection == collection).ToList());
+        }
     }
 }
