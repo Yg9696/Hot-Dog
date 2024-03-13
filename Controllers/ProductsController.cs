@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using ShopProject.Models;
 using ShopProject.Services;
 using System;
@@ -16,18 +18,48 @@ namespace ShopProject.Controllers
         private readonly string connectionString;
         private readonly ShopService shop;
         List<ProductsModel> list;
+        AccountModel currentAccount;
         public ProductsController(IConfiguration configuration)
         {
+            string userJason=null;
             _configuration = configuration;
             connectionString = configuration.GetConnectionString("myConnect");
             shop = new ShopService(_configuration);
             list = shop.GetListOf("Products").Cast<ProductsModel>().ToList();
+            if (HttpContext!=null) {
+                userJason = HttpContext.Session.GetString("CurrentAccount");
+                    }
+            if (userJason != null)
+            {
+                currentAccount = JsonConvert.DeserializeObject<AccountModel>(userJason);
+                
+            }
         }
+
+        //public IActionResult Home(UsersModel User)
+        //{
+        //    UsersModel user = new UsersModel();
+        //    return View("HomePage",User);
+        //}
+
+        public IActionResult Cart()
+        {
+            return View("cart");
+        }
+        public void RemoveFromCart(int productId)
+        {
+           
+            TempData["Message"] = "The product was removed successfully"; 
+
+             
+        }
+
+
 
 
         public IActionResult AddToCart(int productId)
         {
-            shop.AddItemTo(new  {UserId=1234,ProductId= "123"},"ShopList");
+            shop.AddItemTo(new  {UserId= currentAccount.UserID,ProductId= productId},"ShopList");
 
             return View("MyProducts",list);
         }
