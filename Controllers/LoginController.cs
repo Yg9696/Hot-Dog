@@ -33,7 +33,6 @@ namespace ShopProject.Controllers
         }
        
 
-
         public IActionResult Payment()
         {
             return View("Payment");
@@ -47,12 +46,14 @@ namespace ShopProject.Controllers
         }
         public IActionResult Logout()
         {
-            return RedirectToAction("Index");
+            return View("LoginPage");
         }
+
+
         public IActionResult Index()
         {
             //UsersModel user = new UsersModel();
-            return View();
+            return View("LoginPage");
         }
         [Route("ShowDetails")]
         public IActionResult ShowDetails(UsersModel user)
@@ -67,7 +68,7 @@ namespace ShopProject.Controllers
                 }
                 else
                 {
-                    return View("index",user);
+                    return View("HomePage", user);
                 }
 
             }
