@@ -16,7 +16,7 @@ namespace ShopProject.Filters
 
         public async Task Invoke(HttpContext httpContext)
         {
-            if (httpContext.Session.GetString("UserID") == null
+            if (httpContext.Session.GetString("UserId") == null
                 && !httpContext.Request.Path.Value.StartsWith("/Login/Index"))
             {
                 // Redirect if not logged in and not already on the login page

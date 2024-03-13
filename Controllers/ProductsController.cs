@@ -39,7 +39,7 @@ namespace ShopProject.Controllers
 
         public IActionResult AddToCart(int productId)
         {
-            shop.AddItemTo(new  {UserId= currentAccount.UserID, ProductId= productId},"ShopList");
+            shop.AddItemTo(new  {UserId= currentAccount.UserID,ProductId= productId},"ShopList");
 
             return View("MyProducts",list);
         }
