@@ -51,8 +51,8 @@ namespace ShopProject.Controllers
         }
         public IActionResult Index()
         {
-            UsersModel user = new UsersModel();
-            return View("LoginPage", user);
+            //UsersModel user = new UsersModel();
+            return View();
         }
         [Route("ShowDetails")]
         public IActionResult ShowDetails(UsersModel user)
