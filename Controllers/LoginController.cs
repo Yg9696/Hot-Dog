@@ -67,7 +67,7 @@ namespace ShopProject.Controllers
                 }
                 else
                 {
-                    return View("HomePage",user);
+                    return View("index",user);
                 }
 
             }
