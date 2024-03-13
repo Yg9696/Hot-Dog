@@ -36,6 +36,26 @@ namespace ShopProject.Controllers
             }
         }
 
+        //public IActionResult Home(UsersModel User)
+        //{
+        //    UsersModel user = new UsersModel();
+        //    return View("HomePage",User);
+        //}
+
+        public IActionResult Cart()
+        {
+            return View("cart");
+        }
+        public void RemoveFromCart(int productId)
+        {
+           
+            TempData["Message"] = "The product was removed successfully"; 
+
+             
+        }
+
+
+
 
         public IActionResult AddToCart(int productId)
         {
@@ -87,6 +107,7 @@ namespace ShopProject.Controllers
             }
             return View("MyProducts", listTemp);
         }
+        [HttpPost]
         public IActionResult FilteredProducts(string searchedInput)
         {
             List<ProductsModel> listTemp = list;
@@ -98,9 +119,10 @@ namespace ShopProject.Controllers
             }
             return View("MyProducts", listTemp);
         }
-        public IActionResult ProductDetails(string productId)
+        public IActionResult ProductDetails(int id)
         {
-            ProductsModel product = list.FirstOrDefault(p => (p.ProductId).ToString() == productId);
+            
+            ProductsModel product = list.FirstOrDefault(p => (p.ProductId) == id);
             return View(product);
         }
     }

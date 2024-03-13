@@ -8,8 +8,6 @@ using System.Data;
 using System.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using ShopProject.Models;
-using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
 using ShopProject.Services;
 //using Oracle.ManagedDataAccess.Client; // If using Managed ODP.NET
 
@@ -20,23 +18,42 @@ namespace ShopProject.Controllers
     {
         private readonly IConfiguration _configuration;
         string connectionString = "";
-        ShopService shop;
+        //
+        private readonly ShopService shop;
+        List<ProductsModel> list;
+        //
         public LoginController(IConfiguration configuration)
         {
             _configuration = configuration;
             connectionString = _configuration.GetConnectionString("myConnect");
+            //
             shop = new ShopService(_configuration);
+            list = shop.GetListOf("Products").Cast<ProductsModel>().ToList();
+            //
+        }
+       
 
+        public IActionResult Payment()
+        {
+            return View("Payment");
+        }
+
+
+        public IActionResult Home(UsersModel User)
+        {
+            UsersModel user = new UsersModel();
+            return View("HomePage", User);
         }
         public IActionResult Logout()
         {
-            HttpContext.Session.Clear();
             return View("LoginPage");
         }
+
+
         public IActionResult Index()
         {
-            UsersModel user = new UsersModel();
-            return View("LoginPage", user);
+            //UsersModel user = new UsersModel();
+            return View("LoginPage");
         }
         [Route("ShowDetails")]
         public IActionResult ShowDetails(UsersModel user)
@@ -51,9 +68,7 @@ namespace ShopProject.Controllers
                 }
                 else
                 {
-                    AccountModel currentAccount=shop.GetListOf("Accounts").Cast<AccountModel>().ToList().FirstOrDefault(p=>p.UserName == user.UserName);///here
-                    HttpContext.Session.SetString("CurrentAccount", JsonConvert.SerializeObject(currentAccount));
-                    return View("LoginSucceed", currentAccount);
+                    return View("HomePage", user);
                 }
 
             }
@@ -68,8 +83,10 @@ namespace ShopProject.Controllers
 
                 // Redirect user to login page or any other page
                 //return RedirectToAction("Index");
-                return View("LoginPage");
-                }
+
+                // return View("LoginPage");
+                return RedirectToAction("Index");
+            }
                 else
                 {
                     // If model state is not valid, return to registration page with validation errors
@@ -77,6 +94,10 @@ namespace ShopProject.Controllers
                 }
             }
         
+
+
+
+
 
         public IActionResult REG()
         {

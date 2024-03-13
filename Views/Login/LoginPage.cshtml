@@ -51,20 +51,35 @@
             input[type="submit"]:hover {
                 background-color: #45a049;
             }
+            .btn{
+                margin-right:12px;
+            }
+        .container {
+            width: 700px; 
+            height: 700px; 
+            text-align: center;
+            padding: 20px;
+            border-radius: 8px;
+
+        }
+            
     </style>
 </head>
 <body>
-    <form action="ShowDetails" method="post">
-        <h2>Login</h2>
-        <label for="username">Username</label>
-        <input type="text" id="username" name="UserName" required>
-        <label for="password">Password</label>
-        <input type="password" id="password" name="Password" required>
-        <input type="submit" value="Login">
-        <h6></h6>
-        <a asp-controller="Products" asp-action="MyProducts" class="btn btn-primary">enter as a guest</a>
-
-    </form>
+    <div class="container">
+        <form action="ShowDetails" method="post">
+            <h2>Login</h2>
+            <label for="username">Username</label>
+            <input type="text" id="username" name="UserName" required>
+            <label for="password">Password</label>
+            <input type="password" id="password" name="Password" required>
+            <input type="submit" value="Login">
+            <h6></h6>
+            <a asp-controller="Products" asp-action="MyProducts" class="btn btn-primary">enter as a guest</a>
+            <a asp-controller="Login" asp-action="REG" class="btn btn-primary">Sign up!</a>
+            
+        </form>
+    </div>
 </body>
 </html>
 

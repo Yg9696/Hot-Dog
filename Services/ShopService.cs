@@ -12,11 +12,7 @@ namespace ShopProject.Services
 {
     public interface IShopService
     {
-
-        //List<ProductsModel> GetProducts();
         public List<dynamic> GetListOf(string listType);
-        //UsersModel[] GetUsers();
-        //bool AddProduct(ProductsModel product);
         public bool AddItemTo(dynamic item, string tableName);
     }
     public class ShopService : IShopService
