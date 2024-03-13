@@ -36,6 +36,26 @@ namespace ShopProject.Controllers
             }
         }
 
+        //public IActionResult Home(UsersModel User)
+        //{
+        //    UsersModel user = new UsersModel();
+        //    return View("HomePage",User);
+        //}
+
+        public IActionResult Cart()
+        {
+            return View("cart");
+        }
+        public void RemoveFromCart(int productId)
+        {
+           
+            TempData["Message"] = "The product was removed successfully"; 
+
+             
+        }
+
+
+
 
         public IActionResult AddToCart(int productId)
         {
