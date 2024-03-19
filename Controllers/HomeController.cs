@@ -19,6 +19,7 @@ namespace ShopProject.Controllers
         private readonly ShopService shop;
         private readonly IConfiguration _configuration;
         private readonly string connectionString;
+        
         public HomeController(ILogger<HomeController> logger, IConfiguration configuration)
         {
             _configuration = configuration;

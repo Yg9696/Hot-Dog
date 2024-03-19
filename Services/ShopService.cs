@@ -1,12 +1,15 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using ShopProject.Models;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Security.Policy;
 using System.Security.Principal;
 using System.Threading.Tasks;
+
 
 namespace ShopProject.Services
 {
@@ -19,13 +22,14 @@ namespace ShopProject.Services
     {
         private readonly IConfiguration _configuration;
         private readonly string connectionString;
-
+        
 
 
         public ShopService(IConfiguration configuration)
         {
             _configuration = configuration;
             connectionString = configuration.GetConnectionString("myConnect");
+          
         }
 
 
@@ -85,7 +89,7 @@ namespace ShopProject.Services
                                 case "shoplist":
                                     item = new
                                     {
-                                        UserId = reader.GetInt32(reader.GetOrdinal("UserId")),
+                                        UserId = reader.GetString(reader.GetOrdinal("UserId")),
                                         ProductId = reader.GetString(reader.GetOrdinal("ProductId"))
                                     };
                                     break;
@@ -121,7 +125,7 @@ namespace ShopProject.Services
             {
                 connection.Open();
                 string sqlQuery = $"SELECT CASE WHEN EXISTS (SELECT * FROM sys.tables WHERE name = '{tableName}' AND schema_id = SCHEMA_ID('dbo')) THEN 1 ELSE 0 END";
-                
+
                 using (SqlCommand command = new SqlCommand(sqlQuery, connection))
                 {
                     if ((int)command.ExecuteScalar() == 0)
@@ -133,17 +137,18 @@ namespace ShopProject.Services
                                 sqlQueryInit = $"CREATE TABLE {tableName}(ProductId INT PRIMARY KEY IDENTITY, ProductName VARCHAR(30), Price INT, Collection VARCHAR(100), Description VARCHAR(255), Stock INT)";
                                 break;
                             case "Users":
-                                sqlQueryInit = $"CREATE TABLE {tableName}(Id INT PRIMARY KEY IDENTITYUserName VARCHAR(30) PRIMARY KEY IDENTITY, Password VARCHAR(30))";
+                                sqlQueryInit = $"CREATE TABLE {tableName}(Id INT PRIMARY KEY IDENTITY,UserName VARCHAR(30) PRIMARY KEY, Password VARCHAR(30))";
                                 break;
                             case "ShopList":
-                                sqlQueryInit = $"CREATE TABLE {tableName}(UserId VARCHAR(30) , ProductId VARCHAR(30))";
+                                sqlQueryInit = $"CREATE TABLE {tableName} (UserId VARCHAR(30), ProductId VARCHAR(30))"; 
                                 break;
 
                         }
 
                         command.CommandText = sqlQueryInit;
                         command.ExecuteNonQuery();
-                        if(tableName== "Products") {
+                        if (tableName == "Products")
+                        {
                             command.CommandText = $"SELECT CASE WHEN EXISTS (SELECT * FROM sys.tables WHERE name = 'Images' AND schema_id = SCHEMA_ID('dbo')) THEN 1 ELSE 0 END";
                             if ((int)command.ExecuteScalar() == 0)
                             {
@@ -151,7 +156,7 @@ namespace ShopProject.Services
                                 command.ExecuteNonQuery();
                             }
                         }
-                        
+
                     }
 
 
@@ -167,7 +172,7 @@ namespace ShopProject.Services
                             command.Parameters.AddWithValue("collection", item.Collection);
                             command.Parameters.AddWithValue("@description", item.Description);
                             command.Parameters.AddWithValue("@stock", item.Stock);
-                            
+
 
                             break;
                         case "Users":
@@ -177,8 +182,19 @@ namespace ShopProject.Services
                             break;
                         case "ShopList":
                             sqlQueryAdd = $"INSERT INTO {tableName} VALUES(@UserId,@ProductId)";
+                            //sqlQueryAdd = @"
+                            //MERGE INTO " + tableName + @" WITH (HOLDLOCK) AS target
+                            //USING (VALUES (@UserId, @ProductId, @units)) 
+                            //      AS source (UserId, ProductId, Units)
+                            //      ON target.UserId = source.UserId AND target.ProductId = source.ProductId
+                            //WHEN MATCHED THEN 
+                            //    UPDATE SET Units = target.Units + source.Units
+                            //WHEN NOT MATCHED THEN 
+                            //    INSERT (UserId, ProductId, Units) VALUES (source.UserId, source.ProductId, source.Units);";
+
                             command.Parameters.AddWithValue("@UserId", item.UserId);
                             command.Parameters.AddWithValue("@ProductId", item.ProductId);
+                           
                             break;
 
                     }
@@ -198,6 +214,8 @@ namespace ShopProject.Services
                 }
             }
 
+
+
             return rowsAffected != 0;
         }
 
@@ -210,7 +228,32 @@ namespace ShopProject.Services
             cart.TotalAmount = cart.products.Sum(p => p.Price);
             return cart;
         }
-    }
 
+        public bool deleteFrom(int itemId,int userId, string tableName)
+        {
+            int rowsAffected = 0;
+            string sqlQuery = null;
+            
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+
+                switch (tableName.ToLower())
+            {
+                case "shoplist":
+                    sqlQuery = $"DELETE FROM {tableName} WHERE UserId={userId} and ProductId={itemId}";
+                    break;
+            }
+            
+                connection.Open();
+                using (SqlCommand command = new SqlCommand(sqlQuery, connection))
+                {
+                    command.CommandText = sqlQuery;
+                    rowsAffected = command.ExecuteNonQuery();
+
+                }
+            }
+            return rowsAffected > 0;
+        }
+    }
 }
 

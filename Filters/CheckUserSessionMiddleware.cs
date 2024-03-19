@@ -16,11 +16,15 @@ namespace ShopProject.Filters
 
         public async Task Invoke(HttpContext httpContext)
         {
-            if (httpContext.Session.GetString("UserID") == null
-                && !httpContext.Request.Path.Value.StartsWith("/Login/Index"))
+            if (httpContext.Session.GetString("CurrentAccount") == null
+        && !httpContext.Request.Path.Value.StartsWith("/Login/Index"))
             {
                 // Redirect if not logged in and not already on the login page
                 httpContext.Response.Redirect("/Login/Index");
+            }
+            else if (httpContext.Request.Path.Value.StartsWith("/Login/Index"))
+            {
+                await _next(httpContext); // Skip redirection for login page
             }
             else
             {

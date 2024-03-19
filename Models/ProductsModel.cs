@@ -17,6 +17,7 @@ namespace ShopProject.Models
         public string Description { get; set; } 
         public int Stock { get; set; }
         public List<string> PicturesPaths { get; set; }
+        public int units { get; set; }
 
 
 
