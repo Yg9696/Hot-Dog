@@ -1,6 +1,7 @@
 ﻿body {
     margin-top: 20px;
-    background: #eee;
+    background: url('/picpic.jpg') no-repeat center center fixed;
+    background-size: cover;
 }
 
 .ui-w-40 {
@@ -23,3 +24,9 @@
     box-shadow: 0 0 0 1px rgba(0,0,0,0.15) inset;
     vertical-align: middle;
 }
+
+.btn-back-to-shopping {
+    background-color: red; 
+    color: white;   
+}
+
