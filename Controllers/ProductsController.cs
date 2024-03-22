@@ -7,7 +7,9 @@ using ShopProject.Services;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Dynamic;
 using System.Linq;
+
 
 namespace ShopProject.Controllers
 {
@@ -19,21 +21,22 @@ namespace ShopProject.Controllers
         private readonly ShopService shop;
         List<ProductsModel> list;
         AccountModel currentAccount;
+        
+        
+
         public ProductsController(IConfiguration configuration)
         {
-            string userJason=null;
+           
             _configuration = configuration;
             connectionString = configuration.GetConnectionString("myConnect");
             shop = new ShopService(_configuration);
+            
             list = shop.GetListOf("Products").Cast<ProductsModel>().ToList();
-            if (HttpContext!=null) {
-                userJason = HttpContext.Session.GetString("CurrentAccount");
-                    }
-            if (userJason != null)
-            {
-                currentAccount = JsonConvert.DeserializeObject<AccountModel>(userJason);
-                
-            }
+            
+        }
+        public IActionResult Item()
+        {
+            return View("item");
         }
 
         //public IActionResult Home(UsersModel User)
@@ -44,21 +47,46 @@ namespace ShopProject.Controllers
 
         public IActionResult Cart()
         {
-            return View("cart");
-        }
-        public void RemoveFromCart(int productId)
-        {
-           
-            TempData["Message"] = "The product was removed successfully"; 
+            string userJson = HttpContext.Session.GetString("CurrentAccount");
+            AccountModel currentAccount = null;
 
-             
+            if (!string.IsNullOrEmpty(userJson))
+            {
+                currentAccount = JsonConvert.DeserializeObject<AccountModel>(userJson);
+            }
+            List<ProductsModel> listTemp = new List<ProductsModel>();
+
+            //listTemp=list.Where(p=>p.ProductId in shop.GetListOf("ShopList").ToList().Where(p => p.UserId == currentAccount.UserId).ToList()));
+            if (currentAccount != null)
+            {
+                var shopListProductIds = shop.GetListOf("ShopList")
+                             .Where(p => int.Parse(p.UserId) == currentAccount.UserID)
+                             .Select(p =>  int.Parse(p.ProductId) )
+                             .ToList();
+
+
+                foreach (dynamic p  in shopListProductIds)
+                {
+                    listTemp.Add(list.Find(product => product.ProductId == p));
+                }
+                
+            }
+            return View("cart", listTemp);
         }
+        
 
 
 
 
         public IActionResult AddToCart(int productId)
         {
+            string userJson = HttpContext.Session.GetString("CurrentAccount");
+            AccountModel currentAccount = null;
+
+            if (!string.IsNullOrEmpty(userJson))
+            {
+                currentAccount = JsonConvert.DeserializeObject<AccountModel>(userJson);
+            }
             shop.AddItemTo(new  {UserId= currentAccount.UserID,ProductId= productId},"ShopList");
 
             return View("MyProducts",list);
@@ -73,6 +101,7 @@ namespace ShopProject.Controllers
         [HttpPost]
         public IActionResult MyProducts(ProductsModel product )
         {
+            
             if (product != null && ModelState.IsValid)
             {
                 shop.AddItemTo(product,"Products");
@@ -82,7 +111,8 @@ namespace ShopProject.Controllers
         [HttpGet]
         public IActionResult MyProducts()
         {
-        
+            
+
             return View(shop.GetListOf("Products").Cast<ProductsModel>().ToList());
         }
         [HttpPost]
@@ -124,6 +154,22 @@ namespace ShopProject.Controllers
             
             ProductsModel product = list.FirstOrDefault(p => (p.ProductId) == id);
             return View(product);
+        }
+        public IActionResult ProductsCollection(string collection)
+        {
+            return View("MyProducts",list.Where(p => p.Collection == collection).ToList());
+        }
+        public IActionResult deleteFromCart(int itemId)
+        {
+            string userJson = HttpContext.Session.GetString("CurrentAccount");
+            AccountModel currentAccount = null;
+
+            if (!string.IsNullOrEmpty(userJson))
+            {
+                currentAccount = JsonConvert.DeserializeObject<AccountModel>(userJson);
+            }
+            shop.deleteFrom(itemId,currentAccount.UserID, "ShopList");
+            return RedirectToAction("Cart");
         }
     }
 }

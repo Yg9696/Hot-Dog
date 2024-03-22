@@ -9,6 +9,8 @@ using System.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using ShopProject.Models;
 using ShopProject.Services;
+
+using Microsoft.AspNetCore.Http;
 //using Oracle.ManagedDataAccess.Client; // If using Managed ODP.NET
 
 namespace ShopProject.Controllers
@@ -18,6 +20,7 @@ namespace ShopProject.Controllers
     {
         private readonly IConfiguration _configuration;
         string connectionString = "";
+        
         //
         private readonly ShopService shop;
         List<ProductsModel> list;
@@ -68,7 +71,13 @@ namespace ShopProject.Controllers
                 }
                 else
                 {
-                    return View("HomePage", user);
+                    var account = shop.GetListOf("Accounts").Cast<AccountModel>().FirstOrDefault(p => p.UserName == user.UserName);
+                    if (account != null)
+                    {
+                        var jsonString = System.Text.Json.JsonSerializer.Serialize(account);
+                        HttpContext.Session.SetString("CurrentAccount", jsonString);
+                    }
+                    return View("~/Views/Home/Index.cshtml", list);
                 }
 
             }

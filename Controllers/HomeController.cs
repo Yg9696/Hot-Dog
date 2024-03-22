@@ -19,6 +19,7 @@ namespace ShopProject.Controllers
         private readonly ShopService shop;
         private readonly IConfiguration _configuration;
         private readonly string connectionString;
+        
         public HomeController(ILogger<HomeController> logger, IConfiguration configuration)
         {
             _configuration = configuration;
@@ -26,6 +27,10 @@ namespace ShopProject.Controllers
             _logger = logger;
         }
 
+        public IActionResult Admin()
+        {
+            return View("Admin");
+        }
         public IActionResult Index()
         {
            

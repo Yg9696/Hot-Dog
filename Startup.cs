@@ -24,6 +24,8 @@ namespace ShopProject
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+            services.AddHttpContextAccessor();
+            
             services.AddDistributedMemoryCache(); // Adds a default in-memory implementation of IDistributedCache
             services.AddSession(options =>
             {
@@ -46,7 +48,7 @@ namespace ShopProject
                 app.UseExceptionHandler("/Home/Error");
             }
             app.UseStaticFiles();
-
+            
             app.UseRouting();
             app.UseSession();
 
