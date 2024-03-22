@@ -13,9 +13,10 @@ using System.Linq;
 
 namespace ShopProject.Controllers
 {
+
     public class ProductsController : Controller
     {
-
+        public bool sign;
         private readonly IConfiguration _configuration;
         private readonly string connectionString;
         private readonly ShopService shop;
@@ -26,8 +27,8 @@ namespace ShopProject.Controllers
 
         public ProductsController(IConfiguration configuration)
         {
-           
-            _configuration = configuration;
+            sign = true;
+             _configuration = configuration;
             connectionString = configuration.GetConnectionString("myConnect");
             shop = new ShopService(_configuration);
             
@@ -76,6 +77,7 @@ namespace ShopProject.Controllers
 
         public IActionResult AddToCart(int productId)
         {
+             
             string userJson = HttpContext.Session.GetString("CurrentAccount");
             AccountModel currentAccount = null;
 
@@ -84,6 +86,9 @@ namespace ShopProject.Controllers
                 currentAccount = JsonConvert.DeserializeObject<AccountModel>(userJson);
             }
             shop.AddItemTo(new  {UserId= currentAccount.UserID,ProductId= productId},"ShopList");
+            ProductsModel product = (ProductsModel)shop.GetItemById("Products", productId);
+            product.Stock--;
+            shop.UpdateItemFrom(product, "Products");
 
             return View("MyProducts",list);
         }
@@ -97,8 +102,8 @@ namespace ShopProject.Controllers
         [HttpPost]
         public IActionResult MyProducts(ProductsModel product )
         {
-            
-            if (product != null && ModelState.IsValid)
+            product.DateReliesed= DateTime.Now.Date;
+            if (product != null )
             {
                 shop.AddItemTo(product,"Products");
             }
@@ -107,30 +112,79 @@ namespace ShopProject.Controllers
         [HttpGet]
         public IActionResult MyProducts()
         {
-            
+            string userJson = HttpContext.Session.GetString("CurrentAccount");
+            AccountModel currentAccount = null;
 
-            return View(shop.GetListOf("Products").Cast<ProductsModel>().ToList());
+            if (!string.IsNullOrEmpty(userJson))
+            {
+                currentAccount = JsonConvert.DeserializeObject<AccountModel>(userJson);
+            }
+
+            return View(shop.GetListOf("Products")
+    .Cast<ProductsModel>().ToList());
+   
+    //.Where(p => p.AgeLimit > Convert.ToInt32(currentAccount.Age))
+    //.ToList());
         }
         [HttpPost]
-        public IActionResult SortProducts(string selectedFilter)
+        public IActionResult SortProducts(string selectedFilter,string sign)
         {
             List<ProductsModel> listTemp = list;
-            switch (selectedFilter)
+            if (sign=="up" )
             {
-                case "name":
-                    listTemp = list.OrderBy(l => l.ProductName).ToList();
-                    break;
-                case "price":
-                    listTemp = list.OrderBy(l => l.Price).ToList();
-                    break;
-                case "collection":
-                    listTemp = list.OrderBy(l => l.Collection).ToList();
-                    break;
-                case "stock":
-                    listTemp = list.OrderBy(l => l.Stock).ToList();
-                    break;
+                
+                switch (selectedFilter)
+                {
+                    case "name":
+                        listTemp = list.OrderBy(l => l.ProductName).ToList();
+                        break;
+                    case "price":
+                        listTemp = list.OrderBy(l => l.Price).ToList();
+                        break;
+                    case "collection":
+                        listTemp = list.OrderBy(l => l.Collection).ToList();
+                        break;
+                    case "stock":
+                        listTemp = list.OrderBy(l => l.Stock).ToList();
+                        break;
+                    case "Popularity":
+                        listTemp = list.OrderBy(l => l.NumOfOrders).ToList();
+                        break;
+                    case "DateModified":
+                        listTemp = list.OrderBy(l => l.DateReliesed.Ticks).ToList();
+                        break;
 
+
+
+
+                }
             }
+            else
+            {
+                switch (selectedFilter)
+                {
+                    case "name":
+                        listTemp = list.OrderByDescending(l => l.ProductName).ToList();
+                        break;
+                    case "price":
+                        listTemp = list.OrderByDescending(l => l.Price).ToList();
+                        break;
+                    case "collection":
+                        listTemp = list.OrderByDescending(l => l.Collection).ToList();
+                        break;
+                    case "stock":
+                        listTemp = list.OrderByDescending(l => l.Stock).ToList();
+                        break;
+                    case "Popularity":
+                        listTemp = list.OrderByDescending(l => l.NumOfOrders).ToList();
+                        break;
+                    case "DateModified"://dosent work
+                        listTemp = list.OrderByDescending(l => l.DateReliesed.Ticks).ToList();
+                        break;
+
+                }
+            }
+            
             return View("MyProducts", listTemp);
         }
         [HttpPost]
@@ -165,6 +219,9 @@ namespace ShopProject.Controllers
                 currentAccount = JsonConvert.DeserializeObject<AccountModel>(userJson);
             }
             shop.deleteFrom(itemId,currentAccount.UserID, "ShopList");
+            ProductsModel product = shop.GetItemById("Products", itemId);
+            product.Stock++;
+            shop.UpdateItemFrom(product, "Products");
             return RedirectToAction("Cart");
         }
     }

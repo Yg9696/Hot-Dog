@@ -4,6 +4,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Products Page</title>
@@ -60,6 +61,7 @@
         }
 
     </style>
+    
 </head>
 <body>
     <div class="header">
@@ -76,15 +78,19 @@
     @using (Html.BeginForm("SortProducts", "Products", FormMethod.Post))
     {
         <div class="filter-sort-container">
-
+            
             <select id="sortOptions" name="selectedFilter">
                 <option value="name">Sort by Name</option>
                 <option value="price">Sort by Price</option>
                 <option value="collection">Filter by Collection</option>
                 <option value="stock">Filter by Stock</option>
+                <option value="Popularity">Filter by Popularity</option>
+                <option value="DateModified">Filter by Reliesed Date </option>
+                
             </select>
 
-            <button type="submit">Sort</button>
+            <button name="sign" value="down" type="submit">Sort down</button>
+            <button name="sign" value="up" type="submit">Sort up</button>
 
         </div>
     }
@@ -103,14 +109,23 @@
                         <div class="product">
                             <h2 class="product-name">@Model[j].ProductName</h2>
                             <p class="product-id">ID: @Model[j].ProductId</p>
-                            <p class="product-price">Price: @Model[j].Price</p>
+                            <p class="product-price">Price: @(Convert.ToInt32((Model[j].Price * (Convert.ToSingle(100 - Model[j].Discount) / 100))))$</p>
                             <p class="product-Collection">Collection: @Model[j].Collection</p>
                             <p class="product-Description">Description: @Model[j].Description</p>
-                            <p class="product-Stock">Stock: @Model[j].Stock</p>
+                            <p class="product-Stock">In stock: @Model[j].Stock</p>
+                            <p class="product-Stock">Date Reliesed: @Model[j].DateReliesed.ToString("dd/MM/yyyy")</p>
                             <img src="/bonzopic.jpg" class="product-image" style="width: 100px; height: auto;">
                             <form asp-controller="Products" asp-action="AddToCart" method="post">
                                 <input type="hidden" name="productId" value="@Model[j].ProductId" />
+                                
+                                @if (Model[j].Stock < 0)
+                                {
+                                    <button type="submit" class="btn btn-primary">Notify Me</button>
+                                }
+                                else{
                                 <button type="submit" class="btn btn-primary">Add to Cart</button>
+                                <button type="submit" class="btn btn-primary">Buy Now</button>
+                                }
                             </form>
                         </div>
                     </div>
@@ -124,15 +139,7 @@
     </div>
 
 
-    <script>
-        function applySortFilter() {
-            var selectedOption = document.getElementById('sortOptions').value;
-            console.log("Selected Option: " + selectedOption);
-
-            return view("MyProducts", Model.filter)
-
-            // Implement the sorting/filtering logic based on selectedOption
-        }
-    </script>
+    
 </body>
+
 </html>

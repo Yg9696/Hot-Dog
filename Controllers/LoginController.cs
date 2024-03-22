@@ -88,7 +88,7 @@ namespace ShopProject.Controllers
                 if (ModelState.IsValid)
                 {
                     // Call method to add account to database
-                    AddAccountToDataBase(user.UserID, user.FirstName, user.LastName, user.Email, user.PhoneNumber, user.UserName, user.Password);
+                    AddAccountToDataBase(user.UserID, user.FirstName, user.LastName, user.Email, user.PhoneNumber, user.UserName,user.Age, user.Password);
 
                 // Redirect user to login page or any other page
                 //return RedirectToAction("Index");
@@ -139,19 +139,19 @@ namespace ShopProject.Controllers
                 }
             }
         }
-        public void AddAccountToDataBase( int id, string name,string lastname,string email,string phone,string username,string password)
+        public void AddAccountToDataBase( int id, string name,string lastname,string email,string phone,string username,string Age,string password)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 connection.Open();
                 string sqlQueryInit = $"SELECT CASE WHEN EXISTS (SELECT * FROM sys.tables WHERE name = 'Accounts' AND schema_id = SCHEMA_ID('dbo')) THEN 1 ELSE 0 END";
-                string sqlQuery = "INSERT INTO ACCOUNTS VALUES(@value2,@value3,@value4,@value5,@value6,@Value7)";
+                string sqlQuery = "INSERT INTO ACCOUNTS VALUES(@value2,@value3,@value4,@value5,@value6,@Value7,@Value8)";
                 using (SqlCommand command = new SqlCommand(sqlQueryInit, connection))
                 {
                     if ((int)command.ExecuteScalar() == 0)
                     {
                         sqlQueryInit = $"CREATE TABLE Accounts(Id INT PRIMARY KEY IDENTITY,name VARCHAR(30)," +
-                            $" lastname VARCHAR(30),username VARCHAR(30),password VARCHAR(30),email VARCHAR(30),phone VARCHAR(30))";
+                            $" lastname VARCHAR(30),username VARCHAR(30),age VARCHAR(30),password VARCHAR(30),email VARCHAR(30),phone VARCHAR(30))";
                         command.CommandText = sqlQueryInit;
                         command.ExecuteNonQuery();
                     }
@@ -164,9 +164,10 @@ namespace ShopProject.Controllers
                     command.Parameters.AddWithValue("@value2", name);
                     command.Parameters.AddWithValue("@value3", lastname);
                     command.Parameters.AddWithValue("@value4", username);
-                    command.Parameters.AddWithValue("@value5", password);
-                    command.Parameters.AddWithValue("@value6", email);
-                    command.Parameters.AddWithValue("@value7", phone);
+                    command.Parameters.AddWithValue("@value5", Age);
+                    command.Parameters.AddWithValue("@value6", password);
+                    command.Parameters.AddWithValue("@value7", email);
+                    command.Parameters.AddWithValue("@value8", phone);
                     int rowsAffected = command.ExecuteNonQuery();
                 }
             }
