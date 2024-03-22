@@ -35,6 +35,10 @@ namespace ShopProject.Controllers
             list = shop.GetListOf("Products").Cast<ProductsModel>().ToList();
             
         }
+        public IActionResult Item()
+        {
+            return View("item");
+        }
 
         //public IActionResult Home(UsersModel User)
         //{
