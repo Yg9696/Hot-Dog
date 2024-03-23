@@ -1,5 +1,4 @@
-
-﻿@model List<ProductsModel>
+@model List<ProductsModel>
 
 <!DOCTYPE html>
 <html>
@@ -22,7 +21,6 @@
                 <table class="table table-bordered m-0">
                     <thead>
                         <tr>
-                            <!-- Set columns width -->
                             <th class="text-center py-3 px-4" style="min-width: 400px;">Product Name &amp; Details</th>
                             <th class="text-right py-3 px-4" style="width: 100px;">Price</th>
                             <th class="text-center py-3 px-4" style="width: 120px;">Quantity</th>
@@ -31,19 +29,6 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var product in Model)
-                        {
-
-                            <tr>
-                                <!-- Set columns width -->
-                                <th class="text-center py-3 px-4" style="min-width: 400px;">Product Name &amp; Details</th>
-                                <th class="text-right py-3 px-4" style="width: 100px;">Price</th>
-                                <th class="text-center py-3 px-4" style="width: 120px;">Quantity</th>
-                                <th class="text-right py-3 px-4" style="width: 100px;">Total</th>
-                                <th class="text-center align-middle py-3 px-0" style="width: 40px;"><a href="#" class="shop-tooltip float-none text-light" title="" data-original-title="Clear cart"><i class="ino ion-md-trash"></i></a></th>
-                            </tr>
-                        </thead>
-                        <tbody>
                             @foreach (var product in Model)
                             {
                                 <tr>
@@ -68,44 +53,34 @@
                                     </td>
                                 </tr>
                             }
-                        </tbody>
-                    </table>
-                </div>
-                <!-- / Shopping cart table -->
+                    </tbody>
+                </table>
+            </div>
+            <!-- / Shopping cart table -->
 
-                @*calculate the total price*@
-                
-                @{ int x = 0; }
-                @foreach (var product in Model)
-                {
-                    x += Convert.ToInt32(product.Price);
+            <!-- Calculate the total price -->
+                @{
+                    decimal totalPrice = Model.Sum(p => p.Price);
                 }
 
-
-                <div class="d-flex flex-wrap justify-content-between align-items-center pb-4">
-                    <div class="mt-4">
-                        <label class="text-muted font-weight-normal">Promocode</label>
-                        <input type="text" placeholder="ABC" class="form-control">
-                    </div>
-
-                    <div class="text-right mt-4">
-                        <label class="text-muted font-weight-normal m-0">Total price</label>
-                        <div class="text-large"><strong>@Model.Sum(p=>p.Price).ToString("C")</strong></div>
-
-                    </div>
+            <div class="d-flex flex-wrap justify-content-between align-items-center pb-4">
+                <div class="mt-4">
+                    <label class="text-muted font-weight-normal">Promocode</label>
+                    <input type="text" placeholder="ABC" class="form-control">
                 </div>
 
-                <div class="float-right">
-                    <a asp-controller="Home" asp-action="Index" class="btn btn-lg btn-default md-btn-flat mt-2 mr-3 btn-back-to-shopping">Back to shopping</a>
-                    <a asp-controller="Login" asp-action="Payment" class="btn btn-lg btn-primary mt-2">Checkout</a>
+                <div class="text-right mt-4">
+                    <label class="text-muted font-weight-normal m-0">Total price</label>
+                    <div class="text-large"><strong>@totalPrice.ToString("C")</strong></div>
                 </div>
+            </div>
 
-
-
+            <div class="float-right">
+                <a asp-controller="Home" asp-action="Index" class="btn btn-lg btn-default md-btn-flat mt-2 mr-3 btn-back-to-shopping">Back to shopping</a>
+                <a asp-controller="Login" asp-action="Payment" class="btn btn-lg btn-primary mt-2">Checkout</a>
             </div>
         </div>
     </div>
-
 </div>
 
 </body>
