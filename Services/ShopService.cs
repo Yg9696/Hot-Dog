@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using ShopProject.Models;
+using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
@@ -83,8 +84,13 @@ namespace ShopProject.Services
                                         Price = reader.GetInt32(reader.GetOrdinal("Price")),
                                         Collection = reader.GetString(reader.GetOrdinal("Collection")),
                                         Description = reader.GetString(reader.GetOrdinal("Description")),
-                                        Stock = reader.GetInt32(reader.GetOrdinal("Stock"))
-                                    };
+                                        Stock = reader.GetInt32(reader.GetOrdinal("Stock")),
+                                        AgeLimit = reader.GetInt32(reader.GetOrdinal("AgeLimit")),
+                                        Discount = reader.GetInt32(reader.GetOrdinal("discount")),
+                                        NumOfOrders = reader.GetInt32(reader.GetOrdinal("NumOfOrders")),
+                                        DateReliesed = reader.GetDateTime(reader.GetOrdinal("DateReliesed"))
+
+                            };
                                     break;
                                 case "shoplist":
                                     item = new
@@ -134,7 +140,7 @@ namespace ShopProject.Services
                         switch (tableName)//#####
                         {
                             case "Products":
-                                sqlQueryInit = $"CREATE TABLE {tableName}(ProductId INT PRIMARY KEY IDENTITY, ProductName VARCHAR(30), Price INT, Collection VARCHAR(100), Description VARCHAR(255), Stock INT)";
+                                sqlQueryInit = $"CREATE TABLE {tableName}(ProductId INT PRIMARY KEY IDENTITY, ProductName VARCHAR(30), Price INT, Collection VARCHAR(100), Description VARCHAR(255), Stock INT,AgeLimit INT DEFAULT NULL ,Discount INT DEFAULT 0,NumOfOrders INT DEFAULT 0,DateReliesed DATE)";
                                 break;
                             case "Users":
                                 sqlQueryInit = $"CREATE TABLE {tableName}(Id INT PRIMARY KEY IDENTITY,UserName VARCHAR(30) PRIMARY KEY, Password VARCHAR(30))";
@@ -147,15 +153,7 @@ namespace ShopProject.Services
 
                         command.CommandText = sqlQueryInit;
                         command.ExecuteNonQuery();
-                        if (tableName == "Products")
-                        {
-                            command.CommandText = $"SELECT CASE WHEN EXISTS (SELECT * FROM sys.tables WHERE name = 'Images' AND schema_id = SCHEMA_ID('dbo')) THEN 1 ELSE 0 END";
-                            if ((int)command.ExecuteScalar() == 0)
-                            {
-                                command.CommandText = $"CREATE TABLE Images(ImageId INT PRIMARY KEY IDENTITY, ImagePath VARCHAR(30),ProductId INT , FOREIGN KEY (ProductId) REFERENCES Products(ProductId))";
-                                command.ExecuteNonQuery();
-                            }
-                        }
+                        
 
                     }
 
@@ -166,12 +164,17 @@ namespace ShopProject.Services
                     switch (tableName)
                     {
                         case "Products"://#####
-                            sqlQueryAdd = $"INSERT INTO {tableName} VALUES(@name,@price,@collection,@description,@stock)";
+                            sqlQueryAdd = $"INSERT INTO {tableName} VALUES(@name,@price,@collection,@description,@stock,@ageLimit,@discount,0,@DateReliesed)";
                             command.Parameters.AddWithValue("@name", item.ProductName);
                             command.Parameters.AddWithValue("@price", item.Price);
                             command.Parameters.AddWithValue("collection", item.Collection);
                             command.Parameters.AddWithValue("@description", item.Description);
                             command.Parameters.AddWithValue("@stock", item.Stock);
+                            command.Parameters.AddWithValue("@ageLimit", item.AgeLimit);
+                            command.Parameters.AddWithValue("@discount", item.Discount);
+                            command.Parameters.AddWithValue("@DateReliesed", item.DateReliesed);
+
+
 
 
                             break;
@@ -218,6 +221,154 @@ namespace ShopProject.Services
 
             return rowsAffected != 0;
         }
+        public bool UpdateItemFrom(dynamic item, string tableName)
+        {
+            int rowsAffected = 0;
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+
+                string sqlQueryUpdate = "";
+                switch (tableName)
+                {
+                    case "Products":
+                        sqlQueryUpdate = @"
+                    UPDATE Products 
+                    SET 
+                        ProductName = @name,
+                        Price = @price,
+                        Collection = @collection,
+                        Description = @description,
+                        Stock = @stock,
+                        AgeLimit = @ageLimit,
+                        Discount = @discount,
+                        DateReliesed = @DateReliesed
+                    WHERE ProductId = @id";
+
+                        using (SqlCommand command = new SqlCommand(sqlQueryUpdate, connection))
+                        {
+                            command.Parameters.AddWithValue("@id", item.ProductId);
+                            command.Parameters.AddWithValue("@name", item.ProductName);
+                            command.Parameters.AddWithValue("@price", item.Price);
+                            command.Parameters.AddWithValue("collection", item.Collection);
+                            command.Parameters.AddWithValue("@description", item.Description);
+                            command.Parameters.AddWithValue("@stock", item.Stock);
+                            command.Parameters.AddWithValue("@ageLimit", item.AgeLimit);
+                            command.Parameters.AddWithValue("@discount", item.Discount);
+                            command.Parameters.AddWithValue("@DateReliesed", item.DateReliesed);
+
+                            rowsAffected = command.ExecuteNonQuery();
+                        }
+                        break;
+                    case "Users":
+                        sqlQueryUpdate = @"
+                    UPDATE Users 
+                    SET 
+                        UserName = @UserName,
+                        Password = @Password
+                    WHERE Id = @id";
+
+                        using (SqlCommand command = new SqlCommand(sqlQueryUpdate, connection))
+                        {
+                            command.Parameters.AddWithValue("@id", item.Id);
+                            command.Parameters.AddWithValue("@UserName", item.UserName);
+                            command.Parameters.AddWithValue("@Password", item.Password);
+
+                            rowsAffected = command.ExecuteNonQuery();
+                        }
+                        break;
+                    case "ShopList":
+                        sqlQueryUpdate = @"
+                    UPDATE ShopList 
+                    SET 
+                        UserId = @UserId,
+                        ProductId = @ProductId
+                    WHERE UserId = @userId AND ProductId = @productId";
+
+                        using (SqlCommand command = new SqlCommand(sqlQueryUpdate, connection))
+                        {
+                            command.Parameters.AddWithValue("@userId", item.UserId);
+                            command.Parameters.AddWithValue("@ProductId", item.ProductId);
+                            rowsAffected = command.ExecuteNonQuery();
+                        }
+                        break;
+                }
+            }
+
+            return rowsAffected > 0;
+        }
+        public dynamic GetItemById(string tableName, int itemId)
+        {
+            dynamic item = null;
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+
+                string sqlQuerySelect = "";
+                switch (tableName)
+                {
+                    case "Products":
+                        sqlQuerySelect = "SELECT * FROM Products WHERE ProductId = @id";
+                        break;
+                    case "Users":
+                        sqlQuerySelect = "SELECT * FROM Users WHERE Id = @id";
+                        break;
+                    case "ShopList":
+                        sqlQuerySelect = "SELECT * FROM ShopList WHERE UserId = @id";
+                        break;
+                        
+                }
+
+                using (SqlCommand command = new SqlCommand(sqlQuerySelect, connection))
+                {
+                    command.Parameters.AddWithValue("@id", itemId);
+                    SqlDataReader reader = command.ExecuteReader();
+                    if (reader.Read())
+                    {
+                        switch (tableName)
+                        {
+                            case "Products":
+                                item = new ProductsModel
+                                {
+                                    ProductId = reader.GetInt32(reader.GetOrdinal("ProductId")),
+                                    ProductName = reader.GetString(reader.GetOrdinal("ProductName")),
+                                    Price = reader.GetInt32(reader.GetOrdinal("Price")),
+                                    Collection = reader.GetString(reader.GetOrdinal("Collection")),
+                                    Description = reader.GetString(reader.GetOrdinal("Description")),
+                                    Stock = reader.GetInt32(reader.GetOrdinal("Stock")),
+                                    AgeLimit = reader.GetInt32(reader.GetOrdinal("AgeLimit")),
+                                    Discount = reader.GetInt32(reader.GetOrdinal("discount")),
+                                    NumOfOrders = reader.GetInt32(reader.GetOrdinal("NumOfOrders")),
+                                    DateReliesed = reader.GetDateTime(reader.GetOrdinal("DateReliesed"))
+
+                                };
+                                break;
+                            case "Users":
+                                item = new
+                                {
+                                    Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                                    UserName = reader.GetString(reader.GetOrdinal("UserName")),
+                                    Password = reader.GetString(reader.GetOrdinal("Password")),
+                                    
+                                };
+                                break;
+                            case "ShopList":
+                                item = new
+                                {
+                                    UserId = reader.GetString(reader.GetOrdinal("UserId")),
+                                    ProductId = reader.GetString(reader.GetOrdinal("ProductId")),
+                                    
+                                };
+                                break;
+                                
+                        }
+                    }
+                    reader.Close();
+                }
+            }
+
+            return item;
+        }
 
         public CartModel createCart(string userId)
         {
@@ -254,6 +405,33 @@ namespace ShopProject.Services
             }
             return rowsAffected > 0;
         }
+        public bool updateFrom(int itemId, int userId, string tableName)
+        {
+            int rowsAffected = 0;
+            string sqlQuery = null;
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+
+                switch (tableName.ToLower())
+                {
+                    case "shoplist":
+                        sqlQuery = $"DELETE FROM {tableName} WHERE UserId={userId} and ProductId={itemId}";
+                        break;
+                }
+
+                connection.Open();
+                using (SqlCommand command = new SqlCommand(sqlQuery, connection))
+                {
+                    command.CommandText = sqlQuery;
+                    rowsAffected = command.ExecuteNonQuery();
+
+                }
+            }
+            return rowsAffected > 0;
+        }
+
     }
+
 }
 

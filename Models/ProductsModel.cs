@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace ShopProject.Models
@@ -16,7 +17,10 @@ namespace ShopProject.Models
         
         public string Description { get; set; } 
         public int Stock { get; set; }
-        public List<string> PicturesPaths { get; set; }
+        public int AgeLimit { get; set; } = 0;
+        public int Discount { get; set; } = 0;
+        public int NumOfOrders { get; set; } = 0;
+        public DateTime DateReliesed { get; set; } 
         public int units { get; set; }
 
 

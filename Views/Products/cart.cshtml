@@ -1,4 +1,6 @@
-﻿
+
+﻿@model List<ProductsModel>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -8,16 +10,30 @@
     <link rel="stylesheet" href="~/css/Cart.css"> <!-- Linking your Cart.css file -->
 </head>
 <body>
-    <div class="container px-3 my-5 clearfix">
-        <!-- Shopping cart table -->
-        <div class="card">
-            <div class="card-header">
-                <h2>Shopping Cart</h2>
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-bordered m-0">
-                        <thead>
+
+<div class="container px-3 my-5 clearfix">
+    <!-- Shopping cart table -->
+    <div class="card">
+        <div class="card-header">
+            <h2>Shopping Cart</h2>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered m-0">
+                    <thead>
+                        <tr>
+                            <!-- Set columns width -->
+                            <th class="text-center py-3 px-4" style="min-width: 400px;">Product Name &amp; Details</th>
+                            <th class="text-right py-3 px-4" style="width: 100px;">Price</th>
+                            <th class="text-center py-3 px-4" style="width: 120px;">Quantity</th>
+                            <th class="text-right py-3 px-4" style="width: 100px;">Total</th>
+                            <th class="text-center align-middle py-3 px-0" style="width: 40px;"><a href="#" class="shop-tooltip float-none text-light" title="" data-original-title="Clear cart"><i class="ino ion-md-trash"></i></a></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var product in Model)
+                        {
+
                             <tr>
                                 <!-- Set columns width -->
                                 <th class="text-center py-3 px-4" style="min-width: 400px;">Product Name &amp; Details</th>
@@ -71,15 +87,11 @@
                         <label class="text-muted font-weight-normal">Promocode</label>
                         <input type="text" placeholder="ABC" class="form-control">
                     </div>
-                    <div class="d-flex">
-                        <div class="text-right mt-4 mr-5">
-                            <label class="text-muted font-weight-normal m-0">Discount</label>
-                            <div class="text-large"><strong>$20</strong></div>
-                        </div>
-                        <div class="text-right mt-4">
-                            <label class="text-muted font-weight-normal m-0">Total price</label>
-                            <div class="text-large"><strong>@x$</strong></div>
-                        </div>
+
+                    <div class="text-right mt-4">
+                        <label class="text-muted font-weight-normal m-0">Total price</label>
+                        <div class="text-large"><strong>@Model.Sum(p=>p.Price).ToString("C")</strong></div>
+
                     </div>
                 </div>
 
@@ -93,5 +105,8 @@
             </div>
         </div>
     </div>
+
+</div>
+
 </body>
 </html>
