@@ -26,7 +26,10 @@ namespace ShopProject.Controllers
             shop = new ShopService(_configuration);
             _logger = logger;
         }
-
+        public IActionResult About()
+        {
+            return View("About");
+        }
         public IActionResult Admin()
         {
             return View("Admin");
