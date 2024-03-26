@@ -26,7 +26,7 @@ namespace ShopProject
             services.AddControllersWithViews();
             services.AddHttpContextAccessor();
             
-            services.AddDistributedMemoryCache(); // Adds a default in-memory implementation of IDistributedCache
+            services.AddDistributedMemoryCache(); 
             services.AddSession(options =>
             {
                 options.IdleTimeout = TimeSpan.FromMinutes(30); // e.g., 30 minutes session timeout
@@ -59,7 +59,7 @@ namespace ShopProject
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=Login}/{action=Index}/{id?}");
             });
         }
     }

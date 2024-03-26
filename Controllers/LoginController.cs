@@ -77,7 +77,7 @@ namespace ShopProject.Controllers
                         var jsonString = System.Text.Json.JsonSerializer.Serialize(account);
                         HttpContext.Session.SetString("CurrentAccount", jsonString);
                     }
-                    return View("~/Views/Home/Index.cshtml", list);
+                    return RedirectToAction("Index","Home");
                 }
 
             }

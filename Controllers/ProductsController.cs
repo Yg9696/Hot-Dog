@@ -5,10 +5,12 @@ using Newtonsoft.Json;
 using ShopProject.Models;
 using ShopProject.Services;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Dynamic;
 using System.Linq;
+
 
 
 namespace ShopProject.Controllers
@@ -22,6 +24,7 @@ namespace ShopProject.Controllers
         private readonly ShopService shop;
         List<ProductsModel> list;
         AccountModel currentAccount;
+        public string currentCollection;
         
         
 
@@ -79,9 +82,9 @@ namespace ShopProject.Controllers
 
 
 
-        public IActionResult AddToCart(int productId)
+        public IActionResult AddToCart(int productId,string productList)
         {
-             
+           
             string userJson = HttpContext.Session.GetString("CurrentAccount");
             AccountModel currentAccount = null;
 
@@ -93,7 +96,11 @@ namespace ShopProject.Controllers
             ProductsModel product = (ProductsModel)shop.GetItemById("Products", productId);
             product.Stock--;
             shop.UpdateItemFrom(product, "Products");
-
+            currentCollection = HttpContext.Session.GetString("CurrentCollection");
+            if (currentCollection!=null)
+            {
+                return RedirectToAction("ProductsCollection", new { collection = currentCollection });
+            }
             return View("MyProducts",list);
         }
 
@@ -211,6 +218,7 @@ namespace ShopProject.Controllers
         }
         public IActionResult ProductsCollection(string collection)
         {
+            HttpContext.Session.SetString("CurrentCollection", collection);
             return View("MyProducts",list.Where(p => p.Collection == collection).ToList());
         }
         public IActionResult deleteFromCart(int itemId)
