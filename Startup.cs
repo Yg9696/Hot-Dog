@@ -20,7 +20,7 @@ namespace ShopProject
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
+        
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
@@ -29,13 +29,13 @@ namespace ShopProject
             services.AddDistributedMemoryCache(); 
             services.AddSession(options =>
             {
-                options.IdleTimeout = TimeSpan.FromMinutes(30); // e.g., 30 minutes session timeout
+                options.IdleTimeout = TimeSpan.FromMinutes(30); 
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
             });
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+      
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseSession();
@@ -53,7 +53,7 @@ namespace ShopProject
             app.UseSession();
 
             app.UseAuthorization();
-            //app.UseMiddleware<CheckUserSessionMiddleware>(); //uncomment for currentuser check
+           
 
             app.UseEndpoints(endpoints =>
             {

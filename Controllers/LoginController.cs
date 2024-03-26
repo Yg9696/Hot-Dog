@@ -11,7 +11,7 @@ using ShopProject.Models;
 using ShopProject.Services;
 
 using Microsoft.AspNetCore.Http;
-//using Oracle.ManagedDataAccess.Client; // If using Managed ODP.NET
+
 
 namespace ShopProject.Controllers
 {
@@ -55,18 +55,16 @@ namespace ShopProject.Controllers
 
         public IActionResult Index()
         {
-            //UsersModel user = new UsersModel();
+            
             return View("LoginPage");
         }
         [Route("ShowDetails")]
         public IActionResult ShowDetails(UsersModel user)
         {
-            {//sql
+            {
                 if (!UserExistsInDatabase(user.UserName,user.Password))
                 {
-                    //UserRegister reg = new UserRegister();
-                    // AddAccountToDataBase(reg.UserID, reg.FirstName, reg.LastName, reg.UserName, reg.Password, reg.Email, reg.PhoneNumber);
-                    //return View("REGISTER");
+                    
                     return View("Register");
                 }
                 else
@@ -82,23 +80,20 @@ namespace ShopProject.Controllers
 
             }
         }
-        //register action
+        
             public IActionResult Register(AccountModel user)
             {
                 if (ModelState.IsValid)
                 {
-                    // Call method to add account to database
+                   
                     AddAccountToDataBase(user.UserID, user.FirstName, user.LastName, user.Email, user.PhoneNumber, user.UserName,user.Age, user.Password);
 
-                // Redirect user to login page or any other page
-                //return RedirectToAction("Index");
-
-                // return View("LoginPage");
+                
                 return RedirectToAction("Index");
             }
                 else
                 {
-                    // If model state is not valid, return to registration page with validation errors
+                    
                     return View("Register", user);
                 }
             }
@@ -113,7 +108,7 @@ namespace ShopProject.Controllers
             return View("Register");
         }
 
-        //method to add the new username and password to data base
+       
         public void AddUserToDataBase(string username, string password)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -174,7 +169,7 @@ namespace ShopProject.Controllers
             AddUserToDataBase(username, password);
         }
 
-        //method to check if the username exsist in the database
+       
         private bool UserExistsInDatabase(string username,string password)
         {
             bool userExists = false;

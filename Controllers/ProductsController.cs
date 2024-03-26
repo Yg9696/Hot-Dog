@@ -38,16 +38,16 @@ namespace ShopProject.Controllers
             list = shop.GetListOf("Products").Cast<ProductsModel>().ToList();
             
         }
+        public IActionResult AllProducts()
+        {
+            return View("MyProducts");
+        }
         public IActionResult Item()
         {
             return View("item");
         }
 
-        //public IActionResult Home(UsersModel User)
-        //{
-        //    UsersModel user = new UsersModel();
-        //    return View("HomePage",User);
-        //}
+      
 
         public IActionResult Cart()
         {
@@ -60,7 +60,7 @@ namespace ShopProject.Controllers
             }
             List<ProductsModel> listTemp = new List<ProductsModel>();
 
-            //listTemp=list.Where(p=>p.ProductId in shop.GetListOf("ShopList").ToList().Where(p => p.UserId == currentAccount.UserId).ToList()));
+            
             if (currentAccount != null)
             {
                 var shopListProductIds = shop.GetListOf("ShopList")
@@ -134,8 +134,7 @@ namespace ShopProject.Controllers
             return View(shop.GetListOf("Products")
     .Cast<ProductsModel>().ToList());
    
-    //.Where(p => p.AgeLimit > Convert.ToInt32(currentAccount.Age))
-    //.ToList());
+    
         }
         [HttpPost]
         public IActionResult SortProducts(string selectedFilter,string sign)
