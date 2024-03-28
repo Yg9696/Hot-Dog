@@ -186,12 +186,12 @@ namespace ShopProject.Controllers
        
         private bool UserExistsInDatabase(string username,string password)
         {
-            //if (username == "Admin" && password == "Admin")
-            //{
-            //    ModelState.AddModelError(string.Empty, "invalid login with Admin username and password");
-            //    return false;
-            //}
-            
+            if (username == "Admin" && password == "Admin")
+            {
+                ModelState.AddModelError(string.Empty, "invalid login with Admin username and password");
+                return false;
+            }
+
             bool userExists = false;
 
             using (SqlConnection connection = new SqlConnection(connectionString))
