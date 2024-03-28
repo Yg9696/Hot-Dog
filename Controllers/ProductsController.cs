@@ -5,10 +5,12 @@ using Newtonsoft.Json;
 using ShopProject.Models;
 using ShopProject.Services;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Dynamic;
 using System.Linq;
+
 
 
 namespace ShopProject.Controllers
@@ -20,20 +22,35 @@ namespace ShopProject.Controllers
         private readonly IConfiguration _configuration;
         private readonly string connectionString;
         private readonly ShopService shop;
-        List<ProductsModel> list;
-        AccountModel currentAccount;
-        
-        
+        private List<ProductsModel> list;
+        private AccountModel currentAccount;
+        public string currentCollection;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public ProductsController(IConfiguration configuration)
+
+
+        public ProductsController(IConfiguration configuration, IHttpContextAccessor httpContextAccessor)
         {
+            _httpContextAccessor = httpContextAccessor;
             sign = true;
-             _configuration = configuration;
+            _configuration = configuration;
             connectionString = configuration.GetConnectionString("myConnect");
             shop = new ShopService(_configuration);
-            
-            list = shop.GetListOf("Products").Cast<ProductsModel>().ToList();
-            
+            string userJson = _httpContextAccessor.HttpContext.Session.GetString("CurrentAccount");
+            currentAccount = null;
+
+            if (!string.IsNullOrEmpty(userJson))
+            {
+                currentAccount = JsonConvert.DeserializeObject<AccountModel>(userJson);
+            }
+            if (currentAccount.Age != "")
+            {
+                list = shop.GetListOf("Products").Cast<ProductsModel>().ToList().Where(p => p.AgeLimit <= Convert.ToInt32(currentAccount.Age)).ToList();
+            }
+            else
+            {
+                list = shop.GetListOf("Products").Cast<ProductsModel>().ToList();
+            }
         }
         public IActionResult AllProducts()
         {
@@ -44,7 +61,7 @@ namespace ShopProject.Controllers
             return View("item");
         }
 
-      
+
 
         public IActionResult Cart()
         {
@@ -57,31 +74,27 @@ namespace ShopProject.Controllers
             }
             List<ProductsModel> listTemp = new List<ProductsModel>();
 
-            
+
             if (currentAccount != null)
             {
                 var shopListProductIds = shop.GetListOf("ShopList")
                              .Where(p => int.Parse(p.UserId) == currentAccount.UserID)
-                             .Select(p =>  int.Parse(p.ProductId) )
+                             .Select(p => int.Parse(p.ProductId))
                              .ToList();
 
 
-                foreach (dynamic p  in shopListProductIds)
+                foreach (dynamic p in shopListProductIds)
                 {
                     listTemp.Add(list.Find(product => product.ProductId == p));
                 }
-                
+
             }
             return View("cart", listTemp);
         }
-        
 
-
-
-
-        public IActionResult AddToCart(int productId)
+        public IActionResult AddToCart(int productId, string productList)
         {
-             
+
             string userJson = HttpContext.Session.GetString("CurrentAccount");
             AccountModel currentAccount = null;
 
@@ -89,12 +102,16 @@ namespace ShopProject.Controllers
             {
                 currentAccount = JsonConvert.DeserializeObject<AccountModel>(userJson);
             }
-            shop.AddItemTo(new  {UserId= currentAccount.UserID,ProductId= productId},"ShopList");
+            shop.AddItemTo(new { UserId = currentAccount.UserID, ProductId = productId }, "ShopList");
             ProductsModel product = (ProductsModel)shop.GetItemById("Products", productId);
             product.Stock--;
             shop.UpdateItemFrom(product, "Products");
-
-            return View("MyProducts",list);
+            currentCollection = HttpContext.Session.GetString("CurrentCollection");
+            if (currentCollection != null)
+            {
+                return RedirectToAction("ProductsCollection", new { collection = currentCollection });
+            }
+            return View("MyProducts", list);
         }
 
 
@@ -104,12 +121,12 @@ namespace ShopProject.Controllers
             return View(product);
         }
         [HttpPost]
-        public IActionResult MyProducts(ProductsModel product )
+        public IActionResult MyProducts(ProductsModel product)
         {
-            product.DateReliesed= DateTime.Now.Date;
-            if (product != null )
+            product.DateReliesed = DateTime.Now.Date;
+            if (product != null)
             {
-                shop.AddItemTo(product,"Products");
+                shop.AddItemTo(product, "Products");
             }
             return RedirectToAction("MyProducts");
         }
@@ -126,65 +143,92 @@ namespace ShopProject.Controllers
 
             return View(shop.GetListOf("Products")
     .Cast<ProductsModel>().ToList());
-   
-    
+
+
         }
         [HttpPost]
-        public IActionResult SortProducts(string selectedFilter,string sign)
+        public IActionResult SortProducts(string selectedFilter, string sign, int minPrice, int maxPrice)
         {
+            currentCollection = HttpContext.Session.GetString("CurrentCollection");
             List<ProductsModel> listTemp = list;
-            if (sign=="up" )
+            if (currentCollection != null)
             {
                 
-                switch (selectedFilter)
+                listTemp = list.Where(p => p.Collection == currentCollection).ToList();
+            }
+            if (selectedFilter != null) {
+                if (sign == "up")
                 {
-                    case "name":
-                        listTemp = list.OrderBy(l => l.ProductName).ToList();
-                        break;
-                    case "price":
-                        listTemp = list.OrderBy(l => l.Price).ToList();
-                        break;
-                    case "collection":
-                        listTemp = list.OrderBy(l => l.Collection).ToList();
-                        break;
-                    case "stock":
-                        listTemp = list.OrderBy(l => l.Stock).ToList();
-                        break;
-                    case "Popularity":
-                        listTemp = list.OrderBy(l => l.NumOfOrders).ToList();
-                        break;
-                    case "DateModified":
-                        listTemp = list.OrderBy(l => l.DateReliesed.Ticks).ToList();
-                        break;
+
+                    switch (selectedFilter)
+                    {
+                        case "name":
+                            listTemp = listTemp.OrderBy(l => l.ProductName).ToList();
+                            break;
+                        case "price":
+                            listTemp = listTemp.OrderBy(l => l.Price).ToList();
+                            break;
+                        case "collection":
+                            listTemp = listTemp.OrderBy(l => l.Collection).ToList();
+                            break;
+                        case "stock":
+                            listTemp = listTemp.OrderBy(l => l.Stock).ToList();
+                            break;
+                        case "Popularity":
+                            listTemp = listTemp.OrderBy(l => l.NumOfOrders).ToList();
+                            break;
+                        case "DateModified":
+                            listTemp = listTemp.OrderBy(l => l.DateReliesed.Ticks).ToList();
+                            break;
 
 
 
 
+                    }
+                }
+                else
+                {
+                    switch (selectedFilter)
+                    {
+                        case "name":
+                            listTemp = listTemp.OrderByDescending(l => l.ProductName).ToList();
+                            break;
+                        case "price":
+                            listTemp = listTemp.OrderByDescending(l => l.Price).ToList();
+                            break;
+                        case "collection":
+                            listTemp = listTemp.OrderByDescending(l => l.Collection).ToList();
+                            break;
+                        case "stock":
+                            listTemp = listTemp.OrderByDescending(l => l.Stock).ToList();
+                            break;
+                        case "Popularity":
+                            listTemp = listTemp.OrderByDescending(l => l.NumOfOrders).ToList();
+                            break;
+                        case "DateModified"://dosent work
+                            listTemp = listTemp.OrderByDescending(l => l.DateReliesed.Ticks).ToList();
+                            break;
+
+                    }
                 }
             }
-            else
+            if(sign== "Search")
             {
-                switch (selectedFilter)
+                if (minPrice != 0|| maxPrice > 0)
                 {
-                    case "name":
-                        listTemp = list.OrderByDescending(l => l.ProductName).ToList();
-                        break;
-                    case "price":
-                        listTemp = list.OrderByDescending(l => l.Price).ToList();
-                        break;
-                    case "collection":
-                        listTemp = list.OrderByDescending(l => l.Collection).ToList();
-                        break;
-                    case "stock":
-                        listTemp = list.OrderByDescending(l => l.Stock).ToList();
-                        break;
-                    case "Popularity":
-                        listTemp = list.OrderByDescending(l => l.NumOfOrders).ToList();
-                        break;
-                    case "DateModified"://dosent work
-                        listTemp = list.OrderByDescending(l => l.DateReliesed.Ticks).ToList();
-                        break;
+                    if(minPrice>maxPrice)
+                    {
+                        TempData["AlertMessage"] = "Input error -min price can't be higher then max price";
+                    }
+                    else
+                    {
 
+                         listTemp = list.Where(l =>
+                         (l.Price * (Convert.ToSingle(100 - l.Discount) / 100)) <= maxPrice &&
+                         (l.Price * (Convert.ToSingle(100 - l.Discount) / 100)) >= minPrice
+                     ).ToList();
+
+                    }
                 }
             }
             
@@ -210,6 +254,7 @@ namespace ShopProject.Controllers
         }
         public IActionResult ProductsCollection(string collection)
         {
+            HttpContext.Session.SetString("CurrentCollection", collection);
             return View("MyProducts",list.Where(p => p.Collection == collection).ToList());
         }
         public IActionResult deleteFromCart(int itemId)

@@ -89,7 +89,7 @@
             <input type="hidden" id="isAdmin" name="IsAdmin" value="false">
             <input type="submit" value="Login">
             <h6></h6>
-            <a asp-controller="Products" asp-action="MyProducts" class="btn btn-primary">enter as a guest</a>
+            <a asp-controller="Login" asp-action="enterAsGuest" class="btn btn-primary">enter as a guest</a>
             <a asp-controller="Login" asp-action="REG" class="btn btn-primary">Sign up!</a>
             <h6></h6>
             <button type="submit" name="AdminButton" value="true" onclick="document.getElementById('isAdmin').value = 'true';" class="btn btn-primary">Enter As a Admin!</button>
