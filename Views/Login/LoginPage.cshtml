@@ -76,6 +76,9 @@
     </style>
 </head>
 <body>
+
+
+
     <div class="container">
         <form action="ShowDetails" method="post">
             <h2>Login</h2>
@@ -83,14 +86,64 @@
             <input type="text" id="username" name="UserName" required>
             <label for="password">Password</label>
             <input type="password" id="password" name="Password" required>
+            <input type="hidden" id="isAdmin" name="IsAdmin" value="false">
             <input type="submit" value="Login">
             <h6></h6>
             <a asp-controller="Login" asp-action="enterAsGuest" class="btn btn-primary">enter as a guest</a>
             <a asp-controller="Login" asp-action="REG" class="btn btn-primary">Sign up!</a>
             <h6></h6>
-            <a asp-controller="Home" asp-action="Admin" class="admin-btn">Enter As a Admin!</a>
+            <button type="submit" name="AdminButton" value="true" onclick="document.getElementById('isAdmin').value = 'true';" class="btn btn-primary">Enter As a Admin!</button>
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="error-message">
+                    @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                    {
+                        <p>@error.ErrorMessage</p>
+                    }
+                </div>
+            }
+
         </form>
     </div>
+
+
+
+
+    @*<div class="container">
+            <form action="ShowDetails" method="post">
+                <h2>Login</h2>
+                <label for="username">Username</label>
+                <input type="text" id="username" name="UserName" required>
+                <label for="password">Password</label>
+                <input type="password" id="password" name="Password" required>
+                <input type="hidden" name="IsAdmin" value="false">
+                <input type="submit" value="Login">
+                <h6></h6>
+                <a asp-controller="Products" asp-action="MyProducts" class="btn btn-primary">enter as a guest</a>
+                <a asp-controller="Login" asp-action="REG" class="btn btn-primary">Sign up!</a>
+                <h6></h6>
+                <button type="submit" name="Admin" value="true" class="btn btn-primary">Enter As a Admin!</button>
+            </form>
+        </div>*@
+
+
+
+    @*<div class="container">
+            <form action="ShowDetails" method="post">
+                <h2>Login</h2>
+                <label for="username">Username</label>
+                <input type="text" id="username" name="UserName" required>
+                <label for="password">Password</label>
+                <input type="password" id="password" name="Password" required>
+                <input type="submit" value="Login">
+                <h6></h6>
+                <a asp-controller="Products" asp-action="MyProducts" class="btn btn-primary">enter as a guest</a>
+                <a asp-controller="Login" asp-action="REG" class="btn btn-primary">Sign up!</a>
+                <h6></h6>
+                <a asp-controller="Home" asp-action="Admin" class="admin-btn">Enter As a Admin!</a>
+            </form>
+        </div>*@
 </body>
 </html>
 
