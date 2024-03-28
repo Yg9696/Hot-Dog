@@ -9,9 +9,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Dynamic;
+using System.IO;
 using System.Linq;
-
-
+using System.Security.Cryptography;
 
 namespace ShopProject.Controllers
 {
@@ -26,7 +26,7 @@ namespace ShopProject.Controllers
         private AccountModel currentAccount;
         public string currentCollection;
         private readonly IHttpContextAccessor _httpContextAccessor;
-
+        
 
 
         public ProductsController(IConfiguration configuration, IHttpContextAccessor httpContextAccessor)
@@ -38,7 +38,7 @@ namespace ShopProject.Controllers
             shop = new ShopService(_configuration);
             string userJson = _httpContextAccessor.HttpContext.Session.GetString("CurrentAccount");
             currentAccount = null;
-
+           
             if (!string.IsNullOrEmpty(userJson))
             {
                 currentAccount = JsonConvert.DeserializeObject<AccountModel>(userJson);
@@ -91,7 +91,9 @@ namespace ShopProject.Controllers
 
                 foreach (dynamic p in shopListProductIds)
                 {
+
                     listTemp.Add(list.Find(product => product.ProductId == p));
+                    if (listTemp[0] == null) { listTemp = null; }
                 }
 
             }
@@ -122,7 +124,8 @@ namespace ShopProject.Controllers
 
 
         public IActionResult AddProduct()
-        {;
+        {
+            ;
             ProductsModel product = new ProductsModel();
             return View(product);
         }
@@ -159,10 +162,11 @@ namespace ShopProject.Controllers
             List<ProductsModel> listTemp = list;
             if (currentCollection != null)
             {
-                
+
                 listTemp = list.Where(p => p.Collection == currentCollection).ToList();
             }
-            if (selectedFilter != null) {
+            if (selectedFilter != null)
+            {
                 if (sign == "up")
                 {
 
@@ -218,26 +222,26 @@ namespace ShopProject.Controllers
                     }
                 }
             }
-            if(sign== "Search")
+            if (sign == "Search")
             {
-                if (minPrice != 0|| maxPrice > 0)
+                if (minPrice != 0 || maxPrice > 0)
                 {
-                    if(minPrice>maxPrice)
+                    if (minPrice > maxPrice)
                     {
                         TempData["AlertMessage"] = "Input error -min price can't be higher then max price";
                     }
                     else
                     {
 
-                         listTemp = list.Where(l =>
-                         (l.Price * (Convert.ToSingle(100 - l.Discount) / 100)) <= maxPrice &&
-                         (l.Price * (Convert.ToSingle(100 - l.Discount) / 100)) >= minPrice
-                     ).ToList();
+                        listTemp = list.Where(l =>
+                        (l.Price * (Convert.ToSingle(100 - l.Discount) / 100)) <= maxPrice &&
+                        (l.Price * (Convert.ToSingle(100 - l.Discount) / 100)) >= minPrice
+                    ).ToList();
 
                     }
                 }
             }
-            
+
             return View("MyProducts", listTemp);
         }
         [HttpPost]
@@ -246,22 +250,67 @@ namespace ShopProject.Controllers
             List<ProductsModel> listTemp = list;
             if (!string.IsNullOrEmpty(searchedInput))
             {
-                listTemp= list.Where(p => p.ProductName.Contains(searchedInput, StringComparison.OrdinalIgnoreCase) ||
+                listTemp = list.Where(p => p.ProductName.Contains(searchedInput, StringComparison.OrdinalIgnoreCase) ||
                 p.Description.Contains(searchedInput, StringComparison.OrdinalIgnoreCase)).ToList();
-                
+
             }
             return View("MyProducts", listTemp);
         }
         public IActionResult ProductDetails(int id)
         {
-            
+
             ProductsModel product = list.FirstOrDefault(p => (p.ProductId) == id);
             return View(product);
         }
+        public IActionResult CheckOut()
+        {
+
+            return View("Payment");
+        }
+        public IActionResult ToPayment(string CardHolderName, string CreditNumber, string CreditCVC, string ExpiryDateMonth, string ExpiryDateYear)
+        {
+
+            string userJson = HttpContext.Session.GetString("CurrentAccount");
+            AccountModel currentAccount = null;
+
+            if (!string.IsNullOrEmpty(userJson))
+            {
+                currentAccount = JsonConvert.DeserializeObject<AccountModel>(userJson);
+            }
+            var encryptionKey = KeyGenerator.GenerateRandomKey(16);
+            var IV= KeyGenerator.GenerateRandomIV(16);
+            try
+            {
+                // Encrypt the credit card number
+                string encryptedCardNumber = EncryptString(CardHolderName, encryptionKey, IV);
+                string encryptedCreditCVC = EncryptString(CreditCVC, encryptionKey, IV);
+                string encryptedExpiryDate = EncryptString(ExpiryDateMonth+"/"+ExpiryDateYear, encryptionKey, IV);
+                // Save the encrypted credit card number to SQL Server
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+
+                    string sql = $"UPDATE Accounts SET EncryptedCardNumber = CONVERT(VARBINARY(MAX), @EncryptedCardNumber), EncryptedExpiryDate = CONVERT(VARBINARY(MAX), @EncryptedExpiryDate), EncryptedCVV = CONVERT(VARBINARY(MAX), @EncryptedCVV), IV = CONVERT(VARBINARY(MAX), @IV), KeyIdentifier = @KeyIdentifier WHERE Id = {currentAccount.UserID}";
+                    SqlCommand command = new SqlCommand(sql, connection);
+                    command.Parameters.AddWithValue("@EncryptedCardNumber", encryptedCardNumber);
+                    command.Parameters.AddWithValue("@EncryptedExpiryDate", encryptedExpiryDate);
+                    command.Parameters.AddWithValue("@EncryptedCVV", encryptedCreditCVC);
+                    command.Parameters.AddWithValue("@IV", IV);
+                    command.Parameters.AddWithValue("@KeyIdentifier", encryptionKey);
+                    command.ExecuteNonQuery();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error saving encrypted credit card: " + ex.Message);
+            }
+            return View("Payment");
+        }
+
         public IActionResult ProductsCollection(string collection)
         {
             HttpContext.Session.SetString("CurrentCollection", collection);
-            return View("MyProducts",list.Where(p => p.Collection == collection).ToList());
+            return View("MyProducts", list.Where(p => p.Collection == collection).ToList());
         }
         public IActionResult deleteFromCart(int itemId)
         {
@@ -272,11 +321,59 @@ namespace ShopProject.Controllers
             {
                 currentAccount = JsonConvert.DeserializeObject<AccountModel>(userJson);
             }
-            shop.deleteFrom(itemId,currentAccount.UserID, "ShopList");
+            shop.deleteFrom(itemId, currentAccount.UserID, "ShopList");
             ProductsModel product = shop.GetItemById("Products", itemId);
             product.Stock++;
             shop.UpdateItemFrom(product, "Products");
             return RedirectToAction("Cart");
+        }
+       
+        public string EncryptString(string plainText, byte[] key, byte[] iv)
+        {
+            using (Aes aesAlg = Aes.Create())
+            {
+                aesAlg.Key = key;
+                aesAlg.IV = iv;
+
+                // Create an encryptor to perform the stream transform
+                ICryptoTransform encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);
+
+                // Create the streams used for encryption
+                using (MemoryStream msEncrypt = new MemoryStream())
+                {
+                    using (CryptoStream csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
+                    {
+                        using (StreamWriter swEncrypt = new StreamWriter(csEncrypt))
+                        {
+                            // Write all data to the stream
+                            swEncrypt.Write(plainText);
+                        }
+                        return Convert.ToBase64String(msEncrypt.ToArray());
+                    }
+                }
+            }
+        }
+}
+    public class KeyGenerator
+    {
+        public static byte[] GenerateRandomKey(int keySizeInBytes)
+        {
+            byte[] key = new byte[keySizeInBytes];
+            using (var rng = new RNGCryptoServiceProvider())
+            {
+                rng.GetBytes(key);
+            }
+            return key;
+        }
+
+        public static byte[] GenerateRandomIV(int ivSizeInBytes)
+        {
+            byte[] iv = new byte[ivSizeInBytes];
+            using (var rng = new RNGCryptoServiceProvider())
+            {
+                rng.GetBytes(iv);
+            }
+            return iv;
         }
     }
 }

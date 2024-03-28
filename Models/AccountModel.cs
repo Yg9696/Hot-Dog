@@ -33,6 +33,14 @@ namespace ShopProject.Models
         [Required(ErrorMessage = "Phone Number is required.")]
         [Phone(ErrorMessage = "Invalid Phone Number.")]
         public string PhoneNumber { get; set; }
+        public string FullAddress { get; set; }
+        public byte[] EncryptedCardNumber { get; set; }
+        public byte[] EncryptedExpiryDate { get; set; }
+        public byte[] EncryptedCVV { get; set; }
+        public byte[] IV { get; set; }
+        public string KeyIdentifier { get; set; }
+
+
     }
 }
 

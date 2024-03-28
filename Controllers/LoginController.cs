@@ -12,6 +12,7 @@ using ShopProject.Services;
 
 using Microsoft.AspNetCore.Http;
 using System.Security.Principal;
+using System.Net;
 
 
 namespace ShopProject.Controllers
@@ -37,10 +38,7 @@ namespace ShopProject.Controllers
         }
        
 
-        public IActionResult Payment()
-        {
-            return View("Payment");
-        }
+        
 
         public IActionResult BeforePayment()
         {
@@ -175,13 +173,13 @@ namespace ShopProject.Controllers
             {
                 connection.Open();
                 string sqlQueryInit = $"SELECT CASE WHEN EXISTS (SELECT * FROM sys.tables WHERE name = 'Accounts' AND schema_id = SCHEMA_ID('dbo')) THEN 1 ELSE 0 END";
-                string sqlQuery = "INSERT INTO ACCOUNTS VALUES(@value2,@value3,@value4,@value5,@value6,@Value7,@Value8)";
+                string sqlQuery = "INSERT INTO ACCOUNTS(name,lastname,username,age,password,email,phone) VALUES(@value2,@value3,@value4,@value5,@value6,@Value7,@Value8)";
                 using (SqlCommand command = new SqlCommand(sqlQueryInit, connection))
                 {
                     if ((int)command.ExecuteScalar() == 0)
                     {
                         sqlQueryInit = $"CREATE TABLE Accounts(Id INT PRIMARY KEY IDENTITY,name VARCHAR(30)," +
-                            $" lastname VARCHAR(30),username VARCHAR(30),age VARCHAR(30),password VARCHAR(30),email VARCHAR(30),phone VARCHAR(30))";
+                            $" lastname VARCHAR(30),username VARCHAR(30),age VARCHAR(30),password VARCHAR(30),email VARCHAR(30),phone VARCHAR(30),FullAddress VARCHAR(30) DEFAULT NULL,EncryptedCardNumber VARBINARY(MAX) DEFAULT NULL,   EncryptedExpiryDate VARBINARY(MAX) DEFAULT NULL,    EncryptedCVV VARBINARY(MAX) DEFAULT NULL,   IV VARBINARY(16),   KeyIdentifier NVARCHAR(50) DEFAULT NULL)";
                         command.CommandText = sqlQueryInit;
                         command.ExecuteNonQuery();
                     }
