@@ -9,7 +9,7 @@
         <div class='col-md-4'>
             <script src='https://js.stripe.com/v2/' type='text/javascript'></script>
             <form asp-controller="Products" asp-action="ToPayment" accept-charset="UTF-8" class="require-validation" data-cc-on-file="false" data-stripe-publishable-key="pk_bQQaTxnaZlzv4FnnuZ28LFHccVSaj" id="payment-form" method="post">
-               
+
                 <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓" /><input name="_method" type="hidden" value="PUT" /><input name="authenticity_token" type="hidden" value="qLZ9cScer7ZxqulsUWazw4x3cSEzv899SP/7ThPCOV8=" /></div>
                 <div class='form-row'>
                     <div class='col-xs-12 form-group required'>
@@ -47,10 +47,10 @@
                 </div>
                 <div class='form-row'>
                     <div class='col-md-12 form-group'>
-                        <button class='form-control btn btn-primary submit-button' type='submit'>Pay »</button>
-                        
+                        <a href="/Products/Receipt" class='btn btn-primary btn-block'>Pay »</a>
                     </div>
                 </div>
+
                 <div class='form-row'>
                     <div class='col-md-12 error form-group hide'>
                         <div class='alert-danger alert'>

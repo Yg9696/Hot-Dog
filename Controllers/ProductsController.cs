@@ -53,6 +53,11 @@ namespace ShopProject.Controllers
             }
         }
 
+        public IActionResult Receipt()
+        {
+            return View("Receipt");
+        }
+
         public IActionResult addProducts()
         {
             return View("addProduct");
