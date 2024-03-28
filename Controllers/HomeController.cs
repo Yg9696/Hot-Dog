@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using System.Text.Json;
 using ShopProject.Services;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 
 namespace ShopProject.Controllers
 {
@@ -19,22 +20,39 @@ namespace ShopProject.Controllers
         private readonly ShopService shop;
         private readonly IConfiguration _configuration;
         private readonly string connectionString;
-        
+        private List<ProductsModel> list;
+        private AccountModel currentAccount;
         public HomeController(ILogger<HomeController> logger, IConfiguration configuration)
         {
             _configuration = configuration;
             shop = new ShopService(_configuration);
             _logger = logger;
+            
         }
-
+        public IActionResult About()
+        {
+            return View("About");
+        }
         public IActionResult Admin()
         {
             return View("Admin");
         }
         public IActionResult Index()
         {
-           
-            return View(shop.GetListOf("Products").Cast<ProductsModel>().ToList());
+            string userJson = HttpContext.Session.GetString("CurrentAccount");
+            currentAccount = null;
+
+            if (!string.IsNullOrEmpty(userJson))
+            {
+                currentAccount = JsonConvert.DeserializeObject<AccountModel>(userJson);
+            }
+            if (currentAccount.Age != "") { 
+            list = shop.GetListOf("Products").Cast<ProductsModel>().ToList().Where(p => p.AgeLimit <= Convert.ToInt32(currentAccount.Age)).ToList();
+        }
+            else{
+                list = shop.GetListOf("Products").Cast<ProductsModel>().ToList();
+            }
+            return View(list);
         }
 
         public IActionResult Privacy()

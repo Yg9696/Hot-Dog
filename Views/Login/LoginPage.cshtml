@@ -9,7 +9,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-image: url('/picpic.jpg'); /* Adjust the path as necessary */
+            background-image: url('/picpic.jpg'); 
             background-size: cover;
             background-position: center;
             background-color: #f4f4f4;
@@ -63,6 +63,15 @@
             border-radius: 8px;
 
         }
+        .admin-btn {
+            width: calc(100% - 24px); 
+            padding: 10px; 
+            margin-top: 10px; 
+            background-color: grey;
+            color: white; 
+            border: none;
+            cursor: pointer;
+        }
             
     </style>
 </head>
@@ -76,11 +85,10 @@
             <input type="password" id="password" name="Password" required>
             <input type="submit" value="Login">
             <h6></h6>
-            <a asp-controller="Products" asp-action="MyProducts" class="btn btn-primary">enter as a guest</a>
+            <a asp-controller="Login" asp-action="enterAsGuest" class="btn btn-primary">enter as a guest</a>
             <a asp-controller="Login" asp-action="REG" class="btn btn-primary">Sign up!</a>
             <h6></h6>
-            <a asp-controller="Home" asp-action="Admin" class="btn btn-primary">Admin</a>
-
+            <a asp-controller="Home" asp-action="Admin" class="admin-btn">Enter As a Admin!</a>
         </form>
     </div>
 </body>

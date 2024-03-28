@@ -95,6 +95,7 @@ namespace ShopProject.Services
                                 case "shoplist":
                                     item = new
                                     {
+                                        Id= reader.GetInt32(reader.GetOrdinal("Id")),
                                         UserId = reader.GetString(reader.GetOrdinal("UserId")),
                                         ProductId = reader.GetString(reader.GetOrdinal("ProductId"))
                                     };
@@ -106,6 +107,7 @@ namespace ShopProject.Services
                                         FirstName = reader.GetString(reader.GetOrdinal("name")),
                                         LastName = reader.GetString(reader.GetOrdinal("lastname")),
                                         UserName = reader.GetString(reader.GetOrdinal("username")),
+                                        Age = reader.GetString(reader.GetOrdinal("age")),
                                         Password = reader.GetString(reader.GetOrdinal("password")),
                                         Email = reader.GetString(reader.GetOrdinal("email")),
                                         PhoneNumber = reader.GetString(reader.GetOrdinal("phone"))
@@ -146,7 +148,7 @@ namespace ShopProject.Services
                                 sqlQueryInit = $"CREATE TABLE {tableName}(Id INT PRIMARY KEY IDENTITY,UserName VARCHAR(30) PRIMARY KEY, Password VARCHAR(30))";
                                 break;
                             case "ShopList":
-                                sqlQueryInit = $"CREATE TABLE {tableName} (UserId VARCHAR(30), ProductId VARCHAR(30))"; 
+                                sqlQueryInit = $"CREATE TABLE {tableName} (Id INT PRIMARY KEY IDENTITY,UserId VARCHAR(30), ProductId VARCHAR(30))"; 
                                 break;
 
                         }
@@ -264,13 +266,14 @@ namespace ShopProject.Services
                         sqlQueryUpdate = @"
                     UPDATE Users 
                     SET 
+                        
                         UserName = @UserName,
                         Password = @Password
                     WHERE Id = @id";
 
                         using (SqlCommand command = new SqlCommand(sqlQueryUpdate, connection))
                         {
-                            command.Parameters.AddWithValue("@id", item.Id);
+                            
                             command.Parameters.AddWithValue("@UserName", item.UserName);
                             command.Parameters.AddWithValue("@Password", item.Password);
 
@@ -281,12 +284,14 @@ namespace ShopProject.Services
                         sqlQueryUpdate = @"
                     UPDATE ShopList 
                     SET 
+                        Id=@id,
                         UserId = @UserId,
                         ProductId = @ProductId
                     WHERE UserId = @userId AND ProductId = @productId";
 
                         using (SqlCommand command = new SqlCommand(sqlQueryUpdate, connection))
                         {
+                            command.Parameters.AddWithValue("@id", item.Id);
                             command.Parameters.AddWithValue("@userId", item.UserId);
                             command.Parameters.AddWithValue("@ProductId", item.ProductId);
                             rowsAffected = command.ExecuteNonQuery();
@@ -314,7 +319,7 @@ namespace ShopProject.Services
                         sqlQuerySelect = "SELECT * FROM Users WHERE Id = @id";
                         break;
                     case "ShopList":
-                        sqlQuerySelect = "SELECT * FROM ShopList WHERE UserId = @id";
+                        sqlQuerySelect = "SELECT * FROM ShopList WHERE Id = @id";
                         break;
                         
                 }
@@ -355,6 +360,7 @@ namespace ShopProject.Services
                             case "ShopList":
                                 item = new
                                 {
+                                    Id = reader.GetInt32(reader.GetOrdinal("Id")),
                                     UserId = reader.GetString(reader.GetOrdinal("UserId")),
                                     ProductId = reader.GetString(reader.GetOrdinal("ProductId")),
                                     
@@ -391,14 +397,16 @@ namespace ShopProject.Services
                 switch (tableName.ToLower())
             {
                 case "shoplist":
-                    sqlQuery = $"DELETE FROM {tableName} WHERE UserId={userId} and ProductId={itemId}";
-                    break;
+                        sqlQuery = $"DELETE FROM {tableName} WHERE Id = (SELECT TOP 1 Id FROM {tableName} WHERE UserId=@UserId AND ProductId=@ProductId)";
+                        break;
             }
             
                 connection.Open();
                 using (SqlCommand command = new SqlCommand(sqlQuery, connection))
                 {
                     command.CommandText = sqlQuery;
+                    command.Parameters.AddWithValue("@UserId", userId);
+                    command.Parameters.AddWithValue("@ProductId", itemId);
                     rowsAffected = command.ExecuteNonQuery();
 
                 }

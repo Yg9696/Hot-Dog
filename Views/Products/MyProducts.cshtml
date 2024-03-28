@@ -12,12 +12,12 @@
 
         body {
             font-family: Arial, sans-serif;
-            background-image: url('/picpic.jpg'); /* Specify the path to your background image */
-            background-size: cover; /* Cover the entire viewport */
-            background-position: center; /* Center the background image */
-            position: relative; /* Ensure positioning of cart button relative to body */
-            height: 100vh; /* Ensure full height of background */
-            margin: 0; /* Remove default margin */
+            background-image: url('/picpic.jpg'); 
+            background-size: cover; 
+            background-position: center; 
+            position: relative; 
+            height: 100vh; 
+            margin: 0; 
         }
         .header{
             text-align:center;
@@ -53,11 +53,27 @@
         }
         .cart-button {
             position: absolute;
-            top: 150px;
-            right: 450px;
+            top: 50px;
+            right: 50px;
             cursor: pointer;
-            width: 50px; /* Adjust width of the cart button */
-            height: auto; /* Automatically adjust height based on width */
+            width: 50px; 
+            height: auto; 
+        }
+        .price-range-container label {
+            color: orangered; 
+            font-size:20px;
+        }
+
+        .price-range-container input {
+            color: orangered;
+            font-size: 20px;
+        }
+
+        .price-range-container button {
+            color: orangered; 
+        }
+        .price-range-container{
+            text-align:center;
         }
 
     </style>
@@ -75,18 +91,21 @@
             <button>Search</button>
         </div>
     }
+
+
     @using (Html.BeginForm("SortProducts", "Products", FormMethod.Post))
     {
         <div class="filter-sort-container">
-            
-            <select id="sortOptions" name="selectedFilter">
+
+            <select id="sortOptions"  name="selectedFilter">
+                <option value="" disabled selected>Select Filter</option>
                 <option value="name">Sort by Name</option>
                 <option value="price">Sort by Price</option>
                 <option value="collection">Filter by Collection</option>
                 <option value="stock">Filter by Stock</option>
                 <option value="Popularity">Filter by Popularity</option>
                 <option value="DateModified">Filter by Reliesed Date </option>
-                
+
             </select>
 
             <button name="sign" value="down" type="submit">Sort down</button>
@@ -94,6 +113,26 @@
 
         </div>
     }
+    @using (Html.BeginForm("SortProducts", "Products", FormMethod.Post))
+    {
+    <div class="price-range-container">
+        <label for="minPrice">Search from price:</label>
+        <input name="minPrice" type="number" placeholder="Min price" step="10" min="0">
+
+        <label for="maxPrice">To price:</label>
+        <input name="maxPrice" type="number" placeholder="Max price" step="10" min="0">
+
+            <button name="sign" value="Search" type="submit">Search</button>
+            @if (TempData["AlertMessage"] != null)
+            {
+                <label>@TempData["AlertMessage"]</label>
+                TempData["AlertMessage"] = null;
+                
+            }
+    </div>
+    }
+    
+
 
     <a href="@Url.Action("Cart", "Products")">
         <img src="/cart.jpg" alt="Cart" class="cart-button">
@@ -109,7 +148,9 @@
                         <div class="product">
                             <h2 class="product-name">@Model[j].ProductName</h2>
                             <p class="product-id">ID: @Model[j].ProductId</p>
-                            <p class="product-price">Price: @(Convert.ToInt32((Model[j].Price * (Convert.ToSingle(100 - Model[j].Discount) / 100))))$</p>
+                            <p class="product-price">Full price: @(Model[j].Price)$</p>
+
+                            <p class="product-price">Discounted price: @(Convert.ToInt32((Model[j].Price * (Convert.ToSingle(100 - Model[j].Discount) / 100))))$</p>
                             <p class="product-Collection">Collection: @Model[j].Collection</p>
                             <p class="product-Description">Description: @Model[j].Description</p>
                             <p class="product-Stock">In stock: @Model[j].Stock</p>
@@ -117,14 +158,15 @@
                             <img src="/bonzopic.jpg" class="product-image" style="width: 100px; height: auto;">
                             <form asp-controller="Products" asp-action="AddToCart" method="post">
                                 <input type="hidden" name="productId" value="@Model[j].ProductId" />
-                                
-                                @if (Model[j].Stock < 0)
+
+                                @if (Model[j].Stock <= 0)
                                 {
                                     <button type="submit" class="btn btn-primary">Notify Me</button>
                                 }
-                                else{
-                                <button type="submit" class="btn btn-primary">Add to Cart</button>
-                                <button type="submit" class="btn btn-primary">Buy Now</button>
+                                else
+                                {
+                                    <button type="submit" class="btn btn-primary">Add to Cart</button>
+                                    <button type="submit" class="btn btn-primary">Buy Now</button>
                                 }
                             </form>
                         </div>
@@ -139,7 +181,7 @@
     </div>
 
 
-    
+
 </body>
 
 </html>
