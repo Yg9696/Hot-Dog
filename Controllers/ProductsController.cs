@@ -267,6 +267,10 @@ namespace ShopProject.Controllers
 
             return View("Payment");
         }
+        public IActionResult BeforePayment()
+        {
+            return View("BeforePayment");
+        }
         public IActionResult ToPayment(string CardHolderName, string CreditNumber, string CreditCVC, string ExpiryDateMonth, string ExpiryDateYear)
         {
 
