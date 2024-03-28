@@ -42,7 +42,10 @@ namespace ShopProject.Controllers
             return View("Payment");
         }
 
-
+        public IActionResult BeforePayment()
+        {
+            return View("BeforePayment");
+        }
         public IActionResult Home(UsersModel User)
         {
             UsersModel user = new UsersModel();

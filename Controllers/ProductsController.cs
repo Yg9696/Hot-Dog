@@ -52,6 +52,12 @@ namespace ShopProject.Controllers
                 list = shop.GetListOf("Products").Cast<ProductsModel>().ToList();
             }
         }
+
+        public IActionResult addProducts()
+        {
+            return View("addProduct");
+        }
+
         public IActionResult AllProducts()
         {
             return View("MyProducts");
