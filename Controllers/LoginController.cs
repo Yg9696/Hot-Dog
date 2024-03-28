@@ -191,7 +191,7 @@ namespace ShopProject.Controllers
             //    ModelState.AddModelError(string.Empty, "invalid login with Admin username and password");
             //    return false;
             //}
-
+            
             bool userExists = false;
 
             using (SqlConnection connection = new SqlConnection(connectionString))
