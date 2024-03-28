@@ -11,6 +11,7 @@ using ShopProject.Models;
 using ShopProject.Services;
 
 using Microsoft.AspNetCore.Http;
+using System.Security.Principal;
 
 
 namespace ShopProject.Controllers
@@ -20,7 +21,7 @@ namespace ShopProject.Controllers
     {
         private readonly IConfiguration _configuration;
         string connectionString = "";
-        
+        private static readonly Random random = new Random();
         //
         private readonly ShopService shop;
         List<ProductsModel> list;
@@ -89,8 +90,10 @@ namespace ShopProject.Controllers
                             var jsonString = System.Text.Json.JsonSerializer.Serialize(account);
                             HttpContext.Session.SetString("CurrentAccount", jsonString);
                         }
-                        return View("~/Views/Home/Index.cshtml", list);
+                        
                     }
+
+                    return RedirectToAction("Index","Home");
                 }
             }
         }
@@ -100,7 +103,7 @@ namespace ShopProject.Controllers
                 if (ModelState.IsValid)
                 {
                    
-                    AddAccountToDataBase(user.UserID, user.FirstName, user.LastName, user.Email, user.PhoneNumber, user.UserName,user.Age, user.Password);
+                    AddAccountToDataBase( user.FirstName, user.LastName, user.Email, user.PhoneNumber, user.UserName,user.Age, user.Password);
 
                 
                 return RedirectToAction("Index");
@@ -122,7 +125,22 @@ namespace ShopProject.Controllers
             return View("Register");
         }
 
-       
+        public IActionResult enterAsGuest()
+        {
+            var jsonString = System.Text.Json.JsonSerializer.Serialize(new AccountModel
+            {
+                UserID = (int)(random.Next(-9999, -1000)),
+                FirstName = "",
+                LastName = "",
+                Email = "",
+                UserName = $"guest{random.Next(100, 999)}",
+                Age = "",
+                Password = "",
+                PhoneNumber = ""
+            });
+            HttpContext.Session.SetString("CurrentAccount", jsonString);
+            return RedirectToAction("Index", "Home");
+        }
         public void AddUserToDataBase(string username, string password)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -148,7 +166,7 @@ namespace ShopProject.Controllers
                 }
             }
         }
-        public void AddAccountToDataBase( int id, string name,string lastname,string email,string phone,string username,string Age,string password)
+        public void AddAccountToDataBase(  string name,string lastname,string email,string phone,string username,string Age,string password)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -169,7 +187,6 @@ namespace ShopProject.Controllers
              
                 using (SqlCommand command = new SqlCommand(sqlQuery, connection))
                 {
-                   
                     command.Parameters.AddWithValue("@value2", name);
                     command.Parameters.AddWithValue("@value3", lastname);
                     command.Parameters.AddWithValue("@value4", username);

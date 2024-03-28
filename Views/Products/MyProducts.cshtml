@@ -97,7 +97,8 @@
     {
         <div class="filter-sort-container">
 
-            <select id="sortOptions" name="selectedFilter">
+            <select id="sortOptions"  name="selectedFilter">
+                <option value="" disabled selected>Select Filter</option>
                 <option value="name">Sort by Name</option>
                 <option value="price">Sort by Price</option>
                 <option value="collection">Filter by Collection</option>
@@ -112,7 +113,8 @@
 
         </div>
     }
-
+    @using (Html.BeginForm("SortProducts", "Products", FormMethod.Post))
+    {
     <div class="price-range-container">
         <label for="minPrice">Search from price:</label>
         <input name="minPrice" type="number" placeholder="Min price" step="10" min="0">
@@ -120,8 +122,16 @@
         <label for="maxPrice">To price:</label>
         <input name="maxPrice" type="number" placeholder="Max price" step="10" min="0">
 
-        <button type="submit">Search</button>
+            <button name="sign" value="Search" type="submit">Search</button>
+            @if (TempData["AlertMessage"] != null)
+            {
+                <label>@TempData["AlertMessage"]</label>
+                TempData["AlertMessage"] = null;
+                
+            }
     </div>
+    }
+    
 
 
     <a href="@Url.Action("Cart", "Products")">
@@ -138,7 +148,9 @@
                         <div class="product">
                             <h2 class="product-name">@Model[j].ProductName</h2>
                             <p class="product-id">ID: @Model[j].ProductId</p>
-                            <p class="product-price">Price: @(Convert.ToInt32((Model[j].Price * (Convert.ToSingle(100 - Model[j].Discount) / 100))))$</p>
+                            <p class="product-price">Full price: @(Model[j].Price)$</p>
+
+                            <p class="product-price">Discounted price: @(Convert.ToInt32((Model[j].Price * (Convert.ToSingle(100 - Model[j].Discount) / 100))))$</p>
                             <p class="product-Collection">Collection: @Model[j].Collection</p>
                             <p class="product-Description">Description: @Model[j].Description</p>
                             <p class="product-Stock">In stock: @Model[j].Stock</p>
