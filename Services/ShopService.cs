@@ -107,6 +107,7 @@ namespace ShopProject.Services
                                         FirstName = reader.GetString(reader.GetOrdinal("name")),
                                         LastName = reader.GetString(reader.GetOrdinal("lastname")),
                                         UserName = reader.GetString(reader.GetOrdinal("username")),
+                                        Age = reader.GetString(reader.GetOrdinal("age")),
                                         Password = reader.GetString(reader.GetOrdinal("password")),
                                         Email = reader.GetString(reader.GetOrdinal("email")),
                                         PhoneNumber = reader.GetString(reader.GetOrdinal("phone"))

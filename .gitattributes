@@ -36,7 +36,8 @@
 #*.wwaproj   merge=binary
 
 ###############################################################################
-# behavior for image files
+# behavior for im
+files
 #
 # image files are treated as binary by default.
 ###############################################################################
