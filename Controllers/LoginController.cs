@@ -60,25 +60,41 @@ namespace ShopProject.Controllers
             return View("LoginPage");
         }
         [Route("ShowDetails")]
-        public IActionResult ShowDetails(UsersModel user)
+        public IActionResult ShowDetails(UsersModel user, bool IsAdmin)
         {
             {
-                if (!UserExistsInDatabase(user.UserName,user.Password))
+                if (IsAdmin)
                 {
-                    
-                    return View("Register");
+                    if (AdminIsExsistInDataBase(user.UserName, user.Password))
+                    {
+                        return RedirectToAction("Admin", "Home");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, "Invalid username or password for admin.");
+                        return View("LoginPage", user);
+                    }
                 }
                 else
                 {
-                    var account = shop.GetListOf("Accounts").Cast<AccountModel>().FirstOrDefault(p => p.UserName == user.UserName);
-                    if (account != null)
+                    if (!UserExistsInDatabase(user.UserName, user.Password))
                     {
-                        var jsonString = System.Text.Json.JsonSerializer.Serialize(account);
-                        HttpContext.Session.SetString("CurrentAccount", jsonString);
+
+                        return View("Register");
                     }
+                    else
+                    {
+                        var account = shop.GetListOf("Accounts").Cast<AccountModel>().FirstOrDefault(p => p.UserName == user.UserName);
+                        if (account != null)
+                        {
+                            var jsonString = System.Text.Json.JsonSerializer.Serialize(account);
+                            HttpContext.Session.SetString("CurrentAccount", jsonString);
+                        }
+                        
+                    }
+
                     return RedirectToAction("Index","Home");
                 }
-
             }
         }
         
@@ -187,6 +203,12 @@ namespace ShopProject.Controllers
        
         private bool UserExistsInDatabase(string username,string password)
         {
+            //if (username == "Admin" && password == "Admin")
+            //{
+            //    ModelState.AddModelError(string.Empty, "invalid login with Admin username and password");
+            //    return false;
+            //}
+            
             bool userExists = false;
 
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -216,6 +238,47 @@ namespace ShopProject.Controllers
 
             return userExists;
         }
+
+        private bool AdminIsExsistInDataBase(string username, string password)
+        {
+            bool userExists = false;
+
+            
+            if (username == "Admin" && password == "Admin")
+            {
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+
+                    
+                    string checkTableQuery = $"SELECT CASE WHEN EXISTS (SELECT * FROM sys.tables WHERE name = 'Users' AND schema_id = SCHEMA_ID('dbo')) THEN 1 ELSE 0 END";
+
+                    using (SqlCommand command = new SqlCommand(checkTableQuery, connection))
+                    {
+                        if ((int)command.ExecuteScalar() == 0)
+                        {
+                            return false; 
+                        }
+
+                        string checkUserQuery = "SELECT COUNT(*) FROM Users WHERE UserName = @username AND Password = @password";
+
+                        command.CommandText = checkUserQuery;
+                        command.Parameters.AddWithValue("@username", username);
+                        command.Parameters.AddWithValue("@password", password);
+                        int count = (int)command.ExecuteScalar();
+
+                        if (count > 0)
+                        {
+                            userExists = true; 
+                        }
+                    }
+                }
+            }
+
+            return userExists;
+        }
+
+
 
     }
 }
