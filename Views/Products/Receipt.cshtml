@@ -96,9 +96,10 @@
                         <p style="color: black;">Thank you for your purchase</p>
                     </div>
                     <div class="col-xl-2">
-                        <button type="button" class="btn btn-primary text-capitalize" style="background-color:#60bdf3 ;">
-                            Pay Now
-                        </button>
+                        <div>
+                            <button type="button" class="btn btn-secondary me-2" onclick="location.href='@Url.Action("Index", "Home")'">Homepage</button>
+                            <button type="button" class="btn btn-secondary" onclick="location.href='@Url.Action("Logout", "Login")'">Logout</button>
+                        </div>
                     </div>
                 </div>
             </div>

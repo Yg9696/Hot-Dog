@@ -2,3 +2,13 @@
     background: url('/dogpic.jpg') no-repeat center center fixed;
     background-size: cover;
 }
+
+.button-container {
+    display: flex;
+    justify-content: space-between; /* Ensure space between buttons */
+    margin-top: 20px;
+}
+
+.btn-custom {
+    margin-right: 20px;
+}
