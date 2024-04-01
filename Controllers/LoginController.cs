@@ -13,7 +13,7 @@ using ShopProject.Services;
 using Microsoft.AspNetCore.Http;
 using System.Security.Principal;
 using System.Net;
-
+using Newtonsoft.Json;
 
 namespace ShopProject.Controllers
 {
@@ -48,7 +48,33 @@ namespace ShopProject.Controllers
         }
         public IActionResult Logout()
         {
-            return View("LoginPage");
+            string userJson = HttpContext.Session.GetString("CurrentAccount");
+            AccountModel currentAccount = null;
+
+            if (!string.IsNullOrEmpty(userJson))
+            {
+                currentAccount = JsonConvert.DeserializeObject<AccountModel>(userJson);
+            }
+            if (currentAccount.FullAddress != null)
+            {
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+
+                    string sql = $"UPDATE Accounts SET name = @value1,lastname = @value2,age = @value3,email = @value4,phone = @value5,FullAddress = @value6 WHERE Id = @value7";
+                    SqlCommand command = new SqlCommand(sql, connection);
+                    command.Parameters.AddWithValue("@value1", currentAccount.FirstName);
+                    command.Parameters.AddWithValue("@value2", currentAccount.LastName);
+                    command.Parameters.AddWithValue("@value3", currentAccount.Age);
+                    command.Parameters.AddWithValue("@value4", currentAccount.Email);
+                    command.Parameters.AddWithValue("@value5", currentAccount.PhoneNumber);
+                    command.Parameters.AddWithValue("@value6", currentAccount.FullAddress);
+                    command.Parameters.AddWithValue("@value7", currentAccount.UserID);
+                    command.ExecuteNonQuery();
+                }
+            }
+            HttpContext.Session.Remove("CurrentAccount");
+            return RedirectToAction("Index","Login");
         }
 
 
