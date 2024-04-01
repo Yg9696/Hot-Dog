@@ -53,6 +53,11 @@ namespace ShopProject.Controllers
             }
         }
 
+        public IActionResult Receipt()
+        {
+            return View("Receipt");
+        }
+
         public IActionResult addProducts()
         {
             return View("addProduct");
@@ -273,7 +278,6 @@ namespace ShopProject.Controllers
         }
         public IActionResult ToPayment(string CardHolderName, string CreditNumber, string CreditCVC, string ExpiryDateMonth, string ExpiryDateYear)
         {
-
             string userJson = HttpContext.Session.GetString("CurrentAccount");
             AccountModel currentAccount = null;
 
@@ -282,13 +286,13 @@ namespace ShopProject.Controllers
                 currentAccount = JsonConvert.DeserializeObject<AccountModel>(userJson);
             }
             var encryptionKey = KeyGenerator.GenerateRandomKey(16);
-            var IV= KeyGenerator.GenerateRandomIV(16);
+            var IV = KeyGenerator.GenerateRandomIV(16);
             try
             {
                 // Encrypt the credit card number
                 string encryptedCardNumber = EncryptString(CardHolderName, encryptionKey, IV);
                 string encryptedCreditCVC = EncryptString(CreditCVC, encryptionKey, IV);
-                string encryptedExpiryDate = EncryptString(ExpiryDateMonth+"/"+ExpiryDateYear, encryptionKey, IV);
+                string encryptedExpiryDate = EncryptString(ExpiryDateMonth + "/" + ExpiryDateYear, encryptionKey, IV);
                 // Save the encrypted credit card number to SQL Server
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 {
