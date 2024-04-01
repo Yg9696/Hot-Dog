@@ -12,6 +12,7 @@ using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Security.Principal;
 
 namespace ShopProject.Controllers
 {
@@ -267,9 +268,23 @@ namespace ShopProject.Controllers
             ProductsModel product = list.FirstOrDefault(p => (p.ProductId) == id);
             return View(product);
         }
-        public IActionResult CheckOut()
+        public IActionResult CheckOut(string FirstName,string LastName, string Age, string Address, string Email, string Phone)
         {
+            string userJson = HttpContext.Session.GetString("CurrentAccount");
+            AccountModel currentAccount = null;
 
+            if (!string.IsNullOrEmpty(userJson))
+            {
+                currentAccount = JsonConvert.DeserializeObject<AccountModel>(userJson);
+            }
+            currentAccount.FirstName= FirstName;
+            currentAccount.LastName= LastName;
+            currentAccount.Age= Age;
+            currentAccount.FullAddress= Address;
+            currentAccount.Email= Email;
+            currentAccount.PhoneNumber= Phone;
+            var jsonString = System.Text.Json.JsonSerializer.Serialize(currentAccount);
+            HttpContext.Session.SetString("CurrentAccount", jsonString);
             return View("Payment");
         }
         public IActionResult BeforePayment()
