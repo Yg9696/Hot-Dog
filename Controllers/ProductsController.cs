@@ -146,6 +146,7 @@ namespace ShopProject.Controllers
             return RedirectToAction("MyProducts");
         }
         [HttpGet]
+
         public IActionResult MyProducts()
         {
             string userJson = HttpContext.Session.GetString("CurrentAccount");
@@ -156,8 +157,7 @@ namespace ShopProject.Controllers
                 currentAccount = JsonConvert.DeserializeObject<AccountModel>(userJson);
             }
 
-            return View(shop.GetListOf("Products")
-    .Cast<ProductsModel>().ToList());
+            return View(list);
 
 
         }
@@ -250,6 +250,8 @@ namespace ShopProject.Controllers
 
             return View("MyProducts", listTemp);
         }
+        
+            
         [HttpPost]
         public IActionResult FilteredProducts(string searchedInput)
         {
@@ -257,7 +259,7 @@ namespace ShopProject.Controllers
             if (!string.IsNullOrEmpty(searchedInput))
             {
                 listTemp = list.Where(p => p.ProductName.Contains(searchedInput, StringComparison.OrdinalIgnoreCase) ||
-                p.Description.Contains(searchedInput, StringComparison.OrdinalIgnoreCase)).ToList();
+                p.Description.Contains(searchedInput, StringComparison.OrdinalIgnoreCase) || searchedInput.Contains((p.ProductId).ToString(), StringComparison.OrdinalIgnoreCase)).ToList();
 
             }
             return View("MyProducts", listTemp);
@@ -329,8 +331,42 @@ namespace ShopProject.Controllers
             }
             return View("Payment");
         }
+        public IActionResult Recipt()
+        {
+            string userJson = HttpContext.Session.GetString("CurrentAccount");
+            AccountModel currentAccount = null;
 
-        public IActionResult ProductsCollection(string collection)
+            if (!string.IsNullOrEmpty(userJson))
+            {
+                currentAccount = JsonConvert.DeserializeObject<AccountModel>(userJson);
+            }
+            List<ProductsModel> listTemp = new List<ProductsModel>();
+            ReceiptViewModel receipt = new ReceiptViewModel();
+
+            if (currentAccount != null)
+            {
+                
+                var shopListProductIds = shop.GetListOf("ShopList")
+                             .Where(p => int.Parse(p.UserId) == currentAccount.UserID)
+                             .Select(p => int.Parse(p.ProductId))
+                             .ToList();
+
+
+                foreach (dynamic p in shopListProductIds)
+                {
+
+                    listTemp.Add(list.Find(product => product.ProductId == p));
+                    if (listTemp[0] == null) { listTemp = null; }
+                }
+
+            }
+            receipt.Products = listTemp;
+            receipt.CurrentAccount= currentAccount;
+            return View("Receipt", receipt);
+           
+        }
+        
+            public IActionResult ProductsCollection(string collection)
         {
             HttpContext.Session.SetString("CurrentCollection", collection);
             return View("MyProducts", list.Where(p => p.Collection == collection).ToList());
