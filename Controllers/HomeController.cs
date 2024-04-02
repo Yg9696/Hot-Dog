@@ -35,24 +35,25 @@ namespace ShopProject.Controllers
         }
         public IActionResult Admin()
         {
-            return View("Admin");
+
+            return View("Admin", shop.GetListOf("Products").Cast<ProductsModel>().ToList());
         }
         public IActionResult Index()
         {
             string userJson = HttpContext.Session.GetString("CurrentAccount");
             currentAccount = null;
-
+            List<ProductsModel> TempList;
             if (!string.IsNullOrEmpty(userJson))
             {
                 currentAccount = JsonConvert.DeserializeObject<AccountModel>(userJson);
             }
-            if (currentAccount.Age != "") { 
-            list = shop.GetListOf("Products").Cast<ProductsModel>().ToList().Where(p => p.AgeLimit <= Convert.ToInt32(currentAccount.Age)).ToList();
+            if (currentAccount.Age != "") {
+                TempList = shop.GetListOf("Products").Cast<ProductsModel>().ToList().Where(p => p.AgeLimit <= Convert.ToInt32(currentAccount.Age)).ToList();
         }
             else{
-                list = shop.GetListOf("Products").Cast<ProductsModel>().ToList();
+                TempList = shop.GetListOf("Products").Cast<ProductsModel>().ToList();
             }
-            return View(list);
+            return View(TempList);
         }
 
         public IActionResult Privacy()
@@ -67,3 +68,4 @@ namespace ShopProject.Controllers
         }
     }
 }
+
