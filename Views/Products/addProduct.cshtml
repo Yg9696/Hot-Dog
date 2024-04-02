@@ -1,22 +1,61 @@
-﻿<html>
-    <body>
+﻿<head>
+    <link rel="stylesheet" href="/css/custom.css" />
+</head>
+<body>
+    <div class="container">
+        <h1>Add your new product here!</h1>
         <form action="MyProducts" method="post">
-             <h1> Add your new product here!</h1><br />
-            <label>Product name:</label>
-        <input name="ProductName" required /><br />
-            <label>Price:</label>
-        <input name="Price" required /><br />
-        <label>Collection:</label>
-        <input name="Collection" required /><br />
-        <label>Description:</label>
-        <input name="Description" required /><br />
-        <label>AgeLimit:</label>
-        <input name="AgeLimit" /><br />
-        <label>Discount:</label>
-        <input name="Discount" /><br />
-        <label>Stock:</label>
-        <input name="Stock" /><br />
-        <input type="submit" value="Create" />
+            <div class="row mb-4">
+                <div class="col">
+                    <label>Product name:</label>
+                    <div data-mdb-input-init class="form-outline">
+                        <input type="text" class="form-control" name="ProductName" required />
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-4">
+                <div class="col">
+                    <label>Price:</label>
+                    <div data-mdb-input-init class="form-outline">
+                        <input type="text" class="form-control" name="Price" required />
+                    </div>
+                </div>
+                <div class="col">
+                    <label>Collection:</label>
+                    <div data-mdb-input-init class="form-outline">
+                        <input type="text" class="form-control" name="Collection" required />
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-4">
+                <div class="col">
+                    <label>Description:</label>
+                    <div data-mdb-input-init class="form-outline">
+                        <input type="text" class="form-control" name="Description" required />
+                    </div>
+                </div>
+                <div class="col">
+                    <label>AgeLimit:</label>
+                    <div data-mdb-input-init class="form-outline">
+                        <input type="text" class="form-control" name="AgeLimit" />
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-4">
+                <div class="col">
+                    <label>Discount:</label>
+                    <div data-mdb-input-init class="form-outline">
+                        <input type="text" class="form-control" name="Discount" />
+                    </div>
+                </div>
+                <div class="col">
+                    <label>Stock:</label>
+                    <div data-mdb-input-init class="form-outline">
+                        <input type="text" class="form-control" name="Stock" />
+                    </div>
+                </div>
+            </div>
+            <button data-mdb-ripple-init type="submit" class="btn btn-primary btn-block mb-4">Create</button>
         </form>
-    </body>
-</html>
+    </div>
+</body>
