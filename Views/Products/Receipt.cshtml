@@ -1,6 +1,9 @@
-﻿<head>
+﻿@model ReceiptViewModel;
+<html>
+<head>
     <link rel="stylesheet" href="/css/Receipt.css" />
 </head>
+<body>
 <div class="card" 
     <div class="card-body">
         <div class="container mb-5 mt-3">
@@ -16,7 +19,7 @@
                 <div class="row">
                     <div class="col-xl-8">
                         <ul class="list-unstyled">
-                            <li style="color: black;">To: <span style="color: #5d9fc5;">John Lorem</span></li>
+                            <li style="color: black;">To: <span style="color: #5d9fc5;">@Model.CurrentAccount.FirstName+" "+@Model.CurrentAccount.LastName</span></li>
                             <li style="color: black;">Street, City</li>
                             <li style="color: black;">State, Country</li>
                             <li style="color: black;"><i class="fas fa-phone"></i> 123-456-789</li>
@@ -106,3 +109,5 @@
         </div>
     </div>
 </div>
+</body>
+</html>
