@@ -365,6 +365,11 @@ namespace ShopProject.Controllers
             return View("Receipt", receipt);
            
         }
+
+        public IActionResult EddProducts()
+        {
+            return View("Edd",list);
+        }
         
             public IActionResult ProductsCollection(string collection)
         {

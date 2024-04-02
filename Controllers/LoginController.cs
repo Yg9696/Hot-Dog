@@ -127,24 +127,51 @@ namespace ShopProject.Controllers
                 }
             }
         }
-        
-            public IActionResult Register(AccountModel user)
-            {
-                if (ModelState.IsValid)
-                {
-                   
-                    AddAccountToDataBase( user.FirstName, user.LastName, user.Email, user.PhoneNumber, user.UserName,user.Age, user.Password);
 
+        //public IActionResult Register(AccountModel user)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+
+        //        AddAccountToDataBase( user.FirstName, user.LastName, user.Email, user.PhoneNumber, user.UserName,user.Age, user.Password);
+
+
+        //    return RedirectToAction("Index");
+        //}
+        //    else
+        //    {
+
+        //        return View("Register", user);
+        //    }
+        //}
+
+        public IActionResult Register(AccountModel user)
+        {
+            
+            if (ModelState.IsValid)
+            {
                 
-                return RedirectToAction("Index");
-            }
-                else
+                string errorMessage = IsUnique(user.UserName, user.Email, user.PhoneNumber, user.Password);
+                if (!string.IsNullOrEmpty(errorMessage))
                 {
-                    
+                  
+                    ModelState.AddModelError(string.Empty, errorMessage);
                     return View("Register", user);
                 }
+
+               
+                AddAccountToDataBase(user.FirstName, user.LastName, user.Email, user.PhoneNumber, user.UserName, user.Age, user.Password);
+
+               
+                return RedirectToAction("Index");
             }
-        
+            else
+            {
+               
+                return View("Register", user);
+            }
+        }
+
 
 
 
@@ -268,6 +295,67 @@ namespace ShopProject.Controllers
 
             return userExists;
         }
+
+        public string IsUnique(string username, string email, string phoneNumber, string password)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+
+                
+                string sqlQuery = "SELECT COUNT(*) FROM Accounts WHERE username = @username";
+                using (SqlCommand command = new SqlCommand(sqlQuery, connection))
+                {
+                    command.Parameters.AddWithValue("@username", username);
+                    int usernameCount = (int)command.ExecuteScalar();
+                    if (usernameCount > 0)
+                    {
+                        return "Username already exists.";
+                    }
+                }
+
+                
+                sqlQuery = "SELECT COUNT(*) FROM Accounts WHERE email = @email";
+                using (SqlCommand command = new SqlCommand(sqlQuery, connection))
+                {
+                    command.Parameters.AddWithValue("@email", email);
+                    int emailCount = (int)command.ExecuteScalar();
+                    if (emailCount > 0)
+                    {
+                        return "Email already exists.";
+                    }
+                }
+
+                
+                sqlQuery = "SELECT COUNT(*) FROM Accounts WHERE phone = @phone";
+                using (SqlCommand command = new SqlCommand(sqlQuery, connection))
+                {
+                    command.Parameters.AddWithValue("@phone", phoneNumber);
+                    int phoneCount = (int)command.ExecuteScalar();
+                    if (phoneCount > 0)
+                    {
+                        return "Phone number already exists.";
+                    }
+                }
+
+                
+                sqlQuery = "SELECT COUNT(*) FROM Accounts WHERE password = @password";
+                using (SqlCommand command = new SqlCommand(sqlQuery, connection))
+                {
+                    command.Parameters.AddWithValue("@password", password);
+                    int passwordCount = (int)command.ExecuteScalar();
+                    if (passwordCount > 0)
+                    {
+                        return "Password already exists.";
+                    }
+                }
+            }
+           
+            return "";
+        }
+
+
+
 
         private bool AdminIsExsistInDataBase(string username, string password)
         {
