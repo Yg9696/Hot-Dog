@@ -1,79 +1,304 @@
-﻿@model List<ProductsModel>
+﻿@*@model List<ProductsModel>
 
+
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Products Page</title>
+        <style>
+
+            body {
+                font-family: Arial, sans-serif;
+                background-image: url('/picpic.jpg');
+                background-size: cover;
+                background-position: center;
+                position: relative;
+                height: 100vh;
+                margin: 0;
+            }
+            .header{
+                text-align:center;
+                color:orange;
+            }
+
+
+
+
+            .search-container, .filter-sort-container {
+                margin-bottom: 20px;
+                text-align: center;
+            }
+
+                .search-container input[type="text"], .filter-sort-container select {
+                    width: 50%;
+                    padding: 10px;
+                    margin-right: 10px;
+                }
+
+                .search-container button, .filter-sort-container button {
+                    padding: 10px 20px;
+                    background-color: #333;
+                    color: white;
+                    border: none;
+                    cursor: pointer;
+                }
+
+            .filter-sort-container {
+                display: flex;
+                justify-content: center;
+                gap: 10px;
+            }
+            .cart-button {
+                position: absolute;
+                top: 50px;
+                right: 50px;
+                cursor: pointer;
+                width: 50px;
+                height: auto;
+            }
+            .price-range-container label {
+                color: orangered;
+                font-size:20px;
+            }
+
+            .price-range-container input {
+                color: orangered;
+                font-size: 20px;
+            }
+
+            .price-range-container button {
+                color: orangered;
+            }
+            .price-range-container{
+                text-align:center;
+            }
+
+            .navbar-nav {
+                margin-right: auto; /* Pushes the buttons to the left */
+            }
+
+                .navbar-nav .nav-item {
+                    margin-right: 10px; /* Adjust margin between navbar items */
+                }
+
+                    .navbar-nav .nav-item:last-child {
+                        margin-right: 0; /* Remove margin for the last navbar item */
+                    }
+
+                .navbar-nav .dropdown-menu {
+                    background-color: #f8f9fa; /* Background color for dropdown menu */
+                }
+
+                    .navbar-nav .dropdown-menu .dropdown-item {
+                        color: #343a40; /* Text color for dropdown items */
+                    }
+
+                        .navbar-nav .dropdown-menu .dropdown-item:hover {
+                            background-color: #e9ecef; /* Hover background color for dropdown items */
+                        }
+
+                .navbar-nav .dropdown-divider {
+                    border-top-color: #dee2e6; /* Divider color */
+                }
+
+                .navbar-nav .btn {
+                    margin-right: 10px; /* Adjust margin between buttons */
+                }
+
+                    .navbar-nav .btn:last-child {
+                        margin-right: 0; /* Remove margin for the last button */
+                    }
+
+
+        </style>
+
+    </head>
+    <body>
+        <div class="header">
+            <h1>Welcome to Our Products Page</h1>
+        </div>
+
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container px-4 px-lg-5">
+                <a class="navbar-brand" href="#!">Pets Shop</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+                        <li class="nav-item"><a class="nav-link active" aria-current="page" href="#!">Home</a></li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Home" asp-action="About">About</a>
+                        </li>
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Shop</a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" asp-controller="Products" asp-action="MyProducts">All Products</a></li>
+                                <li><hr class="dropdown-divider" /></li>
+                                <li><a class="dropdown-item" href="#!">Popular Items</a></li>
+                                <li><a class="dropdown-item" href="#!">New Arrivals</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <div class="d-flex align-items-center">
+
+                        <form asp-controller="Products" asp-action="Cart" method="post" class="d-flex mr-2">
+                            <button class="btn btn-outline-dark" type="submit">
+                                <i class="bi-cart-fill me-1"></i>
+                                Cart
+                                <span class="badge bg-dark text-white ms-1 rounded-pill"> </span>
+                            </button>
+                        </form>
+
+                        <form asp-controller="Home" asp-action="Index" method="post" class="d-flex ml-2">
+                            <button class="btn btn-outline-dark" type="submit">
+                                <i class="bi-box-arrow-right me-1"></i>
+                                back to home page
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+
+
+        @using (Html.BeginForm("FilteredProducts", "Products", FormMethod.Post))
+        {
+            <div class="search-container">
+                <input name="searchedInput" type="text" placeholder="Search for products...">
+                <button>Search</button>
+            </div>
+        }
+
+
+        @using (Html.BeginForm("SortProducts", "Products", FormMethod.Post))
+        {
+            <div class="filter-sort-container">
+
+                <select id="sortOptions" name="selectedFilter">
+                    <option value="" disabled selected>Select Filter</option>
+                    <option value="name">Sort by Name</option>
+                    <option value="price">Sort by Price</option>
+                    <option value="collection">Filter by Collection</option>
+                    <option value="stock">Filter by Stock</option>
+                    <option value="Popularity">Filter by Popularity</option>
+                    <option value="DateModified">Filter by Reliesed Date </option>
+
+                </select>
+
+                <button name="sign" value="down" type="submit">Sort down</button>
+                <button name="sign" value="up" type="submit">Sort up</button>
+
+            </div>
+        }
+        @using (Html.BeginForm("SortProducts", "Products", FormMethod.Post))
+        {
+            <div class="price-range-container">
+                <label for="minPrice">Search from price:</label>
+                <input name="minPrice" type="number" placeholder="Min price" step="10" min="0">
+
+                <label for="maxPrice">To price:</label>
+                <input name="maxPrice" type="number" placeholder="Max price" step="10" min="0">
+
+                <button name="sign" value="Search" type="submit">Search</button>
+                @if (TempData["AlertMessage"] != null)
+                {
+                    <label>@TempData["AlertMessage"]</label>
+                    TempData["AlertMessage"] = null;
+
+                }
+            </div>
+        }
+
+
+        <div class="container text-center">
+            @for (int i = 0; i < Model.Count; i += 4)
+            {
+                <div class="row">
+                    @for (int j = i; j < Math.Min(i + 4, Model.Count); j++)
+                    {
+                        <div class="col">
+                            <div class="product">
+                                <h2 class="product-name">@Model[j].ProductName</h2>
+                                <p class="product-id">ID: @Model[j].ProductId</p>
+                                <p class="product-price">Full price: @(Model[j].Price)$</p>
+
+                                <p class="product-price">Discounted price: @(Convert.ToInt32((Model[j].Price * (Convert.ToSingle(100 - Model[j].Discount) / 100))))$</p>
+                                <p class="product-Collection">Collection: @Model[j].Collection</p>
+                                <p class="product-Description">Description: @Model[j].Description</p>
+                                <p class="product-Stock">In stock: @Model[j].Stock</p>
+                                <p class="product-Stock">Date Reliesed: @Model[j].DateReliesed.ToString("dd/MM/yyyy")</p>
+                                <img src="/bonzopic.jpg" class="product-image" style="width: 100px; height: auto;">
+                                <form asp-controller="Products" asp-action="AddToCart" method="post">
+                                    <input type="hidden" name="productId" value="@Model[j].ProductId" />
+
+                                    @if (Model[j].Stock <= 0)
+                                    {
+                                        <button type="submit" class="btn btn-primary">Notify Me</button>
+                                    }
+                                    else
+                                    {
+                                        <button type="submit" class="btn btn-primary">Add to Cart</button>
+                                        <button type="submit" class="btn btn-primary">Buy Now</button>
+                                    }
+                                </form>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </body>
+    </html>*@
+
+@model List<ProductsModel>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Products Page</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="~/css/HomePage.css"> <!-- Your custom CSS file -->
     <style>
+        /* Additional CSS styles specific to this view */
 
-        body {
-            font-family: Arial, sans-serif;
-            background-image: url('/picpic.jpg'); 
-            background-size: cover; 
-            background-position: center; 
-            position: relative; 
-            height: 100vh; 
-            margin: 0; 
-        }
-        .header{
-            text-align:center;
-            color:orange;
-        }
-
-        
-
-
-        .search-container, .filter-sort-container {
+        .product-card {
+            background-color: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            padding: 20px;
             margin-bottom: 20px;
-            text-align: center;
         }
 
-            .search-container input[type="text"], .filter-sort-container select {
-                width: 50%;
-                padding: 10px;
-                margin-right: 10px;
-            }
-
-            .search-container button, .filter-sort-container button {
-                padding: 10px 20px;
-                background-color: #333;
-                color: white;
-                border: none;
-                cursor: pointer;
-            }
-
-        .filter-sort-container {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-        }
-        .cart-button {
-            position: absolute;
-            top: 50px;
-            right: 50px;
-            cursor: pointer;
-            width: 50px; 
-            height: auto; 
-        }
-        .price-range-container label {
-            color: orangered; 
-            font-size:20px;
+        .product-card .card-body {
+            padding: 0;
         }
 
-        .price-range-container input {
-            color: orangered;
-            font-size: 20px;
+        .product-card .card-img-top {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 10px;
         }
 
-        .price-range-container button {
-            color: orangered; 
+        .product-card .card-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-top: 15px;
+            margin-bottom: 10px;
         }
-        .price-range-container{
-            text-align:center;
+
+        .product-card .card-text {
+            margin-bottom: 15px;
+        }
+
+        .product-card .btn-outline-dark {
+            width: 100%;
         }
 
         .navbar-nav {
@@ -112,16 +337,10 @@
                     margin-right: 0; /* Remove margin for the last button */
                 }
 
-
     </style>
-    
 
 </head>
 <body>
-    <div class="header">
-        <h1>Welcome to Our Products Page</h1>
-    </div>
-
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container px-4 px-lg-5">
             <a class="navbar-brand" href="#!">Pets Shop</a>
@@ -132,7 +351,6 @@
                     <li class="nav-item">
                         <a class="nav-link" asp-controller="Home" asp-action="About">About</a>
                     </li>
-
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Shop</a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
@@ -143,28 +361,22 @@
                         </ul>
                     </li>
                 </ul>
-                <div class="d-flex align-items-center">
-                    <!-- Added container for the buttons -->
-                    <form asp-controller="Products" asp-action="Cart" method="post" class="d-flex mr-2">
-                        <button class="btn btn-outline-dark" type="submit">
-                            <i class="bi-cart-fill me-1"></i>
-                            Cart
-                            <span class="badge bg-dark text-white ms-1 rounded-pill"> </span>
-                        </button>
-                    </form>
-
-                    <form asp-controller="Home" asp-action="Index" method="post" class="d-flex ml-2">
-                        <button class="btn btn-outline-dark" type="submit">
-                            <i class="bi-box-arrow-right me-1"></i>
-                            back to home page
-                        </button>
-                    </form>
-                </div> <!-- End of container for the buttons -->
+                <form asp-controller="Products" asp-action="Cart" method="post" class="d-flex mr-2">
+                    <button class="btn btn-outline-dark" type="submit">
+                        <i class="bi-cart-fill me-1"></i>
+                        Cart
+                        <span class="badge bg-dark text-white ms-1 rounded-pill"> </span>
+                    </button>
+                </form>
+                <form asp-controller="Login" asp-action="Logout" method="post" class="d-flex ml-2">
+                    <button class="btn btn-outline-dark" type="submit">
+                        <i class="bi-box-arrow-right me-1"></i>
+                        LogOut
+                    </button>
+                </form>
             </div>
         </div>
     </nav>
-
-
 
     @using (Html.BeginForm("FilteredProducts", "Products", FormMethod.Post))
     {
@@ -214,18 +426,12 @@
         </div>
     }
 
-
-
-    <a href="@Url.Action("Cart", "Products")">
-        <img src="/cart.jpg" alt="Cart" class="cart-button">
-    </a>
-
-    <div class="container text-center">
-        @for (int i = 0; i < Model.Count; i += 4)
-        {
-            <div class="row">
-                @for (int j = i; j < Math.Min(i + 4, Model.Count); j++)
+    <section class="py-5">
+        <div class="container px-4 px-lg-5 mt-5">
+            <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+                @foreach (var product in Model)
                 {
+
                     <div class="col">
                         <div class="product">
                             <h2 class="product-name">@Model[j].ProductName</h2>
@@ -251,10 +457,18 @@
                                     <button type="submit" class="btn btn-primary" formaction="/Products/BuyNow">Buy Now</button>
                                 }
                             </form>
+
                         </div>
                     </div>
                 }
             </div>
+
+        </div>
+    </section>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
         }
        
 
@@ -283,6 +497,4 @@
         }
     </script>
 
-</body>
 
-</html>
