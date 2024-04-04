@@ -52,6 +52,9 @@ namespace ShopProject.Services
                     case "accounts":
                         tableName = "Accounts";
                         break;
+                    case "notifylist":
+                        tableName = "NotifyList";
+                        break;
                     default:
                         return new List<dynamic>();
                 }
@@ -96,6 +99,13 @@ namespace ShopProject.Services
                                     item = new
                                     {
                                         Id= reader.GetInt32(reader.GetOrdinal("Id")),
+                                        UserId = reader.GetString(reader.GetOrdinal("UserId")),
+                                        ProductId = reader.GetString(reader.GetOrdinal("ProductId"))
+                                    };
+                                    break;
+                                case "notifylist":
+                                    item = new
+                                    {
                                         UserId = reader.GetString(reader.GetOrdinal("UserId")),
                                         ProductId = reader.GetString(reader.GetOrdinal("ProductId"))
                                     };
@@ -150,6 +160,9 @@ namespace ShopProject.Services
                             case "ShopList":
                                 sqlQueryInit = $"CREATE TABLE {tableName} (Id INT PRIMARY KEY IDENTITY,UserId VARCHAR(30), ProductId VARCHAR(30))"; 
                                 break;
+                            case "NotifyList":
+                                sqlQueryInit = $"CREATE TABLE {tableName} (UserId VARCHAR(30), ProductId VARCHAR(30), PRIMARY KEY (UserId, ProductId))";
+                                break;
 
                         }
 
@@ -176,9 +189,6 @@ namespace ShopProject.Services
                             command.Parameters.AddWithValue("@discount", item.Discount);
                             command.Parameters.AddWithValue("@DateReliesed", item.DateReliesed);
 
-
-
-
                             break;
                         case "Users":
                             sqlQueryAdd = $"INSERT INTO {tableName} VALUES(@UserName,@Password)";
@@ -187,19 +197,14 @@ namespace ShopProject.Services
                             break;
                         case "ShopList":
                             sqlQueryAdd = $"INSERT INTO {tableName} VALUES(@UserId,@ProductId)";
-                            //sqlQueryAdd = @"
-                            //MERGE INTO " + tableName + @" WITH (HOLDLOCK) AS target
-                            //USING (VALUES (@UserId, @ProductId, @units)) 
-                            //      AS source (UserId, ProductId, Units)
-                            //      ON target.UserId = source.UserId AND target.ProductId = source.ProductId
-                            //WHEN MATCHED THEN 
-                            //    UPDATE SET Units = target.Units + source.Units
-                            //WHEN NOT MATCHED THEN 
-                            //    INSERT (UserId, ProductId, Units) VALUES (source.UserId, source.ProductId, source.Units);";
-
                             command.Parameters.AddWithValue("@UserId", item.UserId);
                             command.Parameters.AddWithValue("@ProductId", item.ProductId);
-                           
+                            break;
+                        case "NotifyList":
+                            sqlQueryAdd = $"INSERT INTO {tableName} (UserId, ProductId) SELECT @UserId, @ProductId WHERE NOT EXISTS (SELECT 1 FROM {tableName} WHERE UserId = @UserId AND ProductId = @ProductId)";
+                            command.Parameters.AddWithValue("@UserId", item.UserId);
+                            command.Parameters.AddWithValue("@ProductId", item.ProductId);
+
                             break;
 
                     }

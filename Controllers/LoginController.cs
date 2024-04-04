@@ -74,6 +74,7 @@ namespace ShopProject.Controllers
                 }
             }
             HttpContext.Session.Remove("CurrentAccount");
+            userJson = HttpContext.Session.GetString("CurrentAccount");
             return RedirectToAction("Index","Login");
         }
 

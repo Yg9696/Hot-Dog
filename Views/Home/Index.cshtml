@@ -119,6 +119,7 @@
                 </div>
             </div>
         </div>
+        
     </section>
     Footer
     <footer class="py-5 bg-dark">
@@ -129,5 +130,20 @@
     Core theme JS
     <script src="js/scripts.js"></script>
     >>>>>>> bb9e57b6993c59c993e2fa1e48ae6f5fd2a22d04
+    <script>
+        var notifyList = HttpContext.Session.GetObject<User>("NotifyList");
+        function showAlert() {
+            String message="the following products are back in stock again!:";
+            for (var i in notifyList){
+                message+=notifyList.
+            }
+            alert('Welcome to our website!');
+            
+        }
+
+       
+        window.onload = showAlert;
+
+    </script>
 </body>
 </html>
