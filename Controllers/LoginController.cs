@@ -91,6 +91,12 @@ namespace ShopProject.Controllers
                 {
                     if (AdminIsExsistInDataBase(user.UserName, user.Password))
                     {
+                        var account = shop.GetListOf("Accounts").Cast<AccountModel>().FirstOrDefault(p => p.UserName == user.UserName);
+                        if (account != null)
+                        {
+                            var jsonString = System.Text.Json.JsonSerializer.Serialize(account);
+                            HttpContext.Session.SetString("CurrentAccount", jsonString);
+                        }
                         return RedirectToAction("Admin", "Home");
                     }
                     else
