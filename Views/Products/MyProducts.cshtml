@@ -115,6 +115,7 @@
 
     </style>
     
+
 </head>
 <body>
     <div class="header">
@@ -237,17 +238,17 @@
                             <p class="product-Stock">In stock: @Model[j].Stock</p>
                             <p class="product-Stock">Date Reliesed: @Model[j].DateReliesed.ToString("dd/MM/yyyy")</p>
                             <img src="/bonzopic.jpg" class="product-image" style="width: 100px; height: auto;">
-                            <form asp-controller="Products" asp-action="AddToCart" method="post">
+                            <form method="post">
                                 <input type="hidden" name="productId" value="@Model[j].ProductId" />
 
                                 @if (Model[j].Stock <= 0)
                                 {
-                                    <button type="submit" class="btn btn-primary">Notify Me</button>
+                                    <button type="button" class="btn btn-primary" onclick="notifyMe('@Model[j].ProductId')">Notify Me</button>
                                 }
                                 else
                                 {
-                                    <button type="submit" class="btn btn-primary">Add to Cart</button>
-                                    <button type="submit" class="btn btn-primary">Buy Now</button>
+                                    <button type="submit" class="btn btn-primary" formaction="/Products/AddToCart">Add to Cart</button>
+                                    <button type="submit" class="btn btn-primary" formaction="/Products/BuyNow">Buy Now</button>
                                 }
                             </form>
                         </div>
@@ -255,13 +256,32 @@
                 }
             </div>
         }
-        @*<form id="logoutForm" asp-controller="Login" asp-action="Logout" method="post">
-            <button type="submit" class="btn btn-primary">Log Out</button>
-        </form>*@
+       
+
 
     </div>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
+    <!-- Your custom script for AJAX -->
+    <script>
+        function notifyMe(productId) {
+            $.ajax({
+                url: '/Products/NotifyMe', // Update the URL to match your controller and action
+                type: 'POST',
+                data: { productId: productId },
+                success: function (response) {
+                    alert('Notification sent successfully!');
+                    // Optionally, you can update the UI based on the response
+                },
+                error: function (xhr, status, error) {
+                    console.error(xhr.responseText);
+                    alert('Failed to send notification!');
+                    // Optionally, handle errors or update UI
+                }
+            });
+        }
+    </script>
 
 </body>
 
