@@ -53,6 +53,18 @@ namespace ShopProject.Controllers
             else{
                 TempList = shop.GetListOf("Products").Cast<ProductsModel>().ToList();
             }
+
+            var listOfIds = shop.GetListOf("NotifyList").ToList().Where(p => (p.UserId) == (currentAccount.UserID).ToString() && shop.GetItemById("Products", int.Parse(p.ProductId)).Stock > 0);
+            List<ProductsModel> notifyList = new List<ProductsModel>();
+            foreach (dynamic p in listOfIds)
+            {
+                notifyList.Add(TempList.Find(product => product.ProductId == int.Parse(p.ProductId)));
+            }
+            if (notifyList != null)
+            {
+                var jsonString = System.Text.Json.JsonSerializer.Serialize(notifyList);
+                HttpContext.Session.SetString("NotifyList", jsonString);
+            }
             return View(TempList);
         }
 

@@ -19,26 +19,18 @@
                 <div class="row">
                     <div class="col-xl-8">
                         <ul class="list-unstyled">
-                            <li style="color: black;">To: <span style="color: #5d9fc5;">@Model.CurrentAccount.FirstName+" "+@Model.CurrentAccount.LastName</span></li>
-                            <li style="color: black;">Street, City</li>
-                            <li style="color: black;">State, Country</li>
-                            <li style="color: black;"><i class="fas fa-phone"></i> 123-456-789</li>
+                            <li style="color: black;">To: <span style="color: #5d9fc5;">@(Model.CurrentAccount.FirstName) @(Model.CurrentAccount.LastName)</span></li>
+                            <li style="color: black;">Address:<br />@Model.CurrentAccount.FullAddress</li>
+                            <li style="color: black;"><i class="fas fa-phone"></i> Phone:<br />@Model.CurrentAccount.PhoneNumber</li>
                         </ul>
                     </div>
                     <div class="col-xl-4">
                         <p style="color: black;">Invoice</p>
                         <ul class="list-unstyled">
                             <li style="color: black;">
-                                <i class="fas fa-circle" style="color:#84B0CA ;"></i> <span class="fw-bold">ID:</span>#123-456
+                               <i class="fas fa-circle" style="color:#84B0CA;"></i> <span class="fw-bold">Creation Date: </span>@DateTime.Today.ToString("dd/MM/yyyy")
                             </li>
-                            <li style="color: black;">
-                                <i class="fas fa-circle" style="color:#84B0CA ;"></i> <span class="fw-bold">Creation Date: </span>Jun 23,2021
-                            </li>
-                            <li style="color: black;">
-                                <i class="fas fa-circle" style="color:#84B0CA ;"></i> <span class="me-1 fw-bold">Status:</span><span class="badge bg-warning text-black fw-bold">
-                                    Unpaid
-                                </span>
-                            </li>
+                            
                         </ul>
                     </div>
                 </div>
@@ -48,48 +40,44 @@
                         <thead style="background-color:#84B0CA ;" class="text-white">
                             <tr>
                                 <th scope="col">#</th>
+                                <th scope="col">Product name</th>
                                 <th scope="col">Description</th>
-                                <th scope="col">Qty</th>
-                                <th scope="col">Unit Price</th>
-                                <th scope="col">Amount</th>
+                                <th scope="col">Price</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <th scope="row">1</th>
-                                <td style="color: black;">Pro Package</td>
-                                <td style="color: black;">4</td>
-                                <td style="color: black;">$200</td>
-                                <td style="color: black;">$800</td>
+                            @{int counter=0;}
+                                @foreach(ProductsModel p in Model.Products){
+                                    counter++;
+                                    <tr>
+                                <th scope="row">@counter</th>
+                                    <td style="color: black;">@p.ProductName</td>
+                                <td style="color: black;">@p.Description</td>
+                                            <td style="color: black;">@p.Price.ToString("C")</td>
                             </tr>
-                            <tr>
-                                <th scope="row">2</th>
-                                <td style="color: black;">Web hosting</td>
-                                <td style="color: black;">1</td>
-                                <td style="color: black;">$10</td>
-                                <td style="color: black;">$10</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">3</th>
-                                <td style="color: black;">Consulting</td>
-                                <td style="color: black;">1 year</td>
-                                <td style="color: black;">$300</td>
-                                <td style="color: black;">$300</td>
-                            </tr>
+                            }
+                            
                         </tbody>
                     </table>
                 </div>
-                <div class="row">
+                    @{
+                        decimal totalPrice = 0;
+                        if (Model != null)
+                        {
+                            totalPrice = Model.Products.Sum(p => p.Price);
+                        }
+                     }
+                     <div class="row">
                     <div class="col-xl-8">
-                        <p class="ms-3" style="color: black;">Add additional notes and payment information</p>
+                        <p class="ms-3" style="color: black;">Estimated Delivery Time:<br />6-8 business days upon purchase</p>
                     </div>
                     <div class="col-xl-3">
                         <ul class="list-unstyled">
-                            <li class="text-muted ms-3"><span class="text-black me-4">SubTotal</span>$1110</li>
-                            <li class="text-muted ms-3 mt-2"><span class="text-black me-4">Tax(15%)</span>$111</li>
+                            <li class="text-muted ms-3"><span class="text-black me-4">SubTotal</span>@{(float.Parse(totalPrice.ToString()) * 0.85).ToString("C");}</li>
+                            <li class="text-muted ms-3 mt-2"><span class="text-black me-4">Tax(15%)</span>@{(float.Parse(totalPrice.ToString()) * 0.15).ToString("C");}</li>
                         </ul>
                         <p class="text-black float-start">
-                            <span class="text-black me-3"> Total Amount</span><span style="font-size: 25px;">$1221</span>
+                            <span class="text-black me-3"> Total Amount</span><span style="font-size: 25px;">@totalPrice.ToString("C")</span>
                         </p>
                     </div>
                 </div>
@@ -100,8 +88,12 @@
                     </div>
                     <div class="col-xl-2">
                         <div>
-                            <button type="button" class="btn btn-secondary me-2" onclick="location.href='@Url.Action("Index", "Home")'">Homepage</button>
-                            <button type="button" class="btn btn-secondary" onclick="location.href='@Url.Action("Logout", "Login")'">Logout</button>
+                            <form asp-controller="Home" asp-action="Index" method="post" class="d-flex ml-2">
+                            <button type="submit" class="btn btn-secondary" >Homepage</button>
+                            </form>
+                            <form asp-controller="Login" asp-action="Logout" method="post" class="d-flex ml-2">
+                            <button type="submit" class="btn btn-secondary" >Logout</button>
+                            </form>
                         </div>
                     </div>
                 </div>

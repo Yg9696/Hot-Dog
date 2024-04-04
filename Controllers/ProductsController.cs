@@ -13,6 +13,8 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Security.Principal;
+using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace ShopProject.Controllers
 {
@@ -149,6 +151,7 @@ namespace ShopProject.Controllers
 
         public IActionResult MyProducts()
         {
+            
             string userJson = HttpContext.Session.GetString("CurrentAccount");
             AccountModel currentAccount = null;
 
@@ -156,11 +159,13 @@ namespace ShopProject.Controllers
             {
                 currentAccount = JsonConvert.DeserializeObject<AccountModel>(userJson);
             }
+            
 
             return View(list);
 
 
         }
+
         [HttpPost]
         public IActionResult SortProducts(string selectedFilter, string sign, int minPrice, int maxPrice)
         {
@@ -250,9 +255,21 @@ namespace ShopProject.Controllers
 
             return View("MyProducts", listTemp);
         }
-        
+        public  IActionResult NotifyMe(int productId)
+        {
+            string userJson = HttpContext.Session.GetString("CurrentAccount");
+            AccountModel currentAccount = null;
+
+            if (!string.IsNullOrEmpty(userJson))
+            {
+                currentAccount = JsonConvert.DeserializeObject<AccountModel>(userJson);
+            }
+            shop.AddItemTo(new { UserId = currentAccount.UserID, ProductId = productId }, "NotifyList");
+            return Ok();
             
-        [HttpPost]
+        }
+
+            [HttpPost]
         public IActionResult FilteredProducts(string searchedInput)
         {
             List<ProductsModel> listTemp = list;
@@ -287,7 +304,25 @@ namespace ShopProject.Controllers
             currentAccount.PhoneNumber= Phone;
             var jsonString = System.Text.Json.JsonSerializer.Serialize(currentAccount);
             HttpContext.Session.SetString("CurrentAccount", jsonString);
-            return View("Payment");
+            List<ProductsModel> listTemp = new List<ProductsModel>();
+            if (currentAccount != null)
+            {
+                var shopListProductIds = shop.GetListOf("ShopList")
+                             .Where(p => int.Parse(p.UserId) == currentAccount.UserID)
+                             .Select(p => int.Parse(p.ProductId))
+                             .ToList();
+
+
+                foreach (dynamic p in shopListProductIds)
+                {
+
+                    listTemp.Add(list.Find(product => product.ProductId == p));
+                    if (listTemp[0] == null) { listTemp = null; }
+                }
+
+            }
+            return View("Payment", listTemp);
+            
         }
         public IActionResult BeforePayment()
         {
@@ -302,6 +337,7 @@ namespace ShopProject.Controllers
             {
                 currentAccount = JsonConvert.DeserializeObject<AccountModel>(userJson);
             }
+            
             var encryptionKey = KeyGenerator.GenerateRandomKey(16);
             var IV = KeyGenerator.GenerateRandomIV(16);
             try
@@ -329,7 +365,7 @@ namespace ShopProject.Controllers
             {
                 Console.WriteLine("Error saving encrypted credit card: " + ex.Message);
             }
-            return View("Payment");
+            return RedirectToAction("Recipt");
         }
         public IActionResult Recipt()
         {
@@ -340,6 +376,7 @@ namespace ShopProject.Controllers
             {
                 currentAccount = JsonConvert.DeserializeObject<AccountModel>(userJson);
             }
+            
             List<ProductsModel> listTemp = new List<ProductsModel>();
             ReceiptViewModel receipt = new ReceiptViewModel();
 
@@ -360,6 +397,34 @@ namespace ShopProject.Controllers
                 }
 
             }
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+
+                string sql = $"DELETE FROM ShopList WHERE UserId = {currentAccount.UserID}";
+                SqlCommand command = new SqlCommand(sql, connection);
+                command.ExecuteNonQuery();
+                connection.Close();
+            }
+            
+            if (currentAccount.FullAddress != null)
+            {
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+
+                    string sql = $"UPDATE Accounts SET name = @value1,lastname = @value2,age = @value3,email = @value4,phone = @value5,FullAddress = @value6 WHERE Id = @value7";
+                    SqlCommand command = new SqlCommand(sql, connection);
+                    command.Parameters.AddWithValue("@value1", currentAccount.FirstName);
+                    command.Parameters.AddWithValue("@value2", currentAccount.LastName);
+                    command.Parameters.AddWithValue("@value3", currentAccount.Age);
+                    command.Parameters.AddWithValue("@value4", currentAccount.Email);
+                    command.Parameters.AddWithValue("@value5", currentAccount.PhoneNumber);
+                    command.Parameters.AddWithValue("@value6", currentAccount.FullAddress);
+                    command.Parameters.AddWithValue("@value7", currentAccount.UserID);
+                    command.ExecuteNonQuery();
+                }
+            }
             receipt.Products = listTemp;
             receipt.CurrentAccount= currentAccount;
             return View("Receipt", receipt);
@@ -371,9 +436,18 @@ namespace ShopProject.Controllers
             return View("Edd",list);
         }
         
-            public IActionResult ProductsCollection(string collection)
+        
+        public IActionResult ProductsCollection(string collection)
         {
-            HttpContext.Session.SetString("CurrentCollection", collection);
+
+            if (collection != null)
+            {
+                HttpContext.Session.SetString("CurrentCollection", collection);
+            }
+            else
+            {
+                collection = HttpContext.Session.GetString("CurrentCollection");
+            }
             return View("MyProducts", list.Where(p => p.Collection == collection).ToList());
         }
         public IActionResult deleteFromCart(int itemId)
@@ -391,7 +465,7 @@ namespace ShopProject.Controllers
             shop.UpdateItemFrom(product, "Products");
             return RedirectToAction("Cart");
         }
-       
+
         public string EncryptString(string plainText, byte[] key, byte[] iv)
         {
             using (Aes aesAlg = Aes.Create())

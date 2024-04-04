@@ -1,4 +1,4 @@
-﻿
+﻿@model List<ProductsModel>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -106,18 +106,24 @@
                     <label class='control-label'> </label>
                     <input class='form-control card-expiry-year' name="ExpiryDateYear" placeholder='YYYY' size='4' type='text'required>
                 </div>
-
+                @{
+                    decimal totalPrice = 0;
+                    if (Model != null)
+                    {
+                        totalPrice = Model.Sum(p => p.Price);
+                    }
+                }
 
 
                 <div class='form-group'>
                     <div class='total btn btn-info'>
                         Total:
-                        <span class='amount'>$300</span>
+                        <span class='amount'>@totalPrice.ToString("C")</span>
                     </div>
                 </div>
                 </form>
                 <div class='form-group'>
-                    <form asp-controller="Products" asp-action="Recipt" method="post">
+                <form asp-controller="Products" asp-action="ToPayment" method="post">
                     <button type="submit" class='btn btn-primary btn-block'>Pay »</button>
                     </form>
                 </div>
