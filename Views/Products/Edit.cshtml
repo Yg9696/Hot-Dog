@@ -1,4 +1,4 @@
-﻿
+﻿@model int ;
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,9 +10,10 @@
 <body>
     <div class="container">
         <h1> product name:</h1>
-               <form id="editProductForm" action="/Products/UpdateProduct" method="post">
+        <form id="editProductForm" action="/Products/EditProducts" method="post">
             <div class="row mb-4">
                 <div class="col">
+                    <input type="hidden" name="id" value="@Model" />
                     <div data-mdb-input-init class="form-outline">
                         <input type="text" id="changePrice" class="form-control" name="ChangePrice" placeholder="Change Price" />
                     </div>
@@ -25,7 +26,7 @@
             </div>
 
             <button type="submit" class="btn btn-primary btn-block mb-4">Save Changes</button>
-            <button type="button" class="btn btn-secondary btn-block" onclick="location.href='@Url.Action("Index", "Home")'">Back Home</button>
+            <button type="button" class="btn btn-secondary btn-block" onclick="location.href='@Url.Action("Admin", "Home")'">Back Home</button>
         </form>
     </div>
 </body>
