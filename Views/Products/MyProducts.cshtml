@@ -292,7 +292,7 @@
                             <div class="product product-card" data-product-id="@Model[j].ProductId">
                                 <h2 class="card-title">@Model[j].ProductName</h2>
                                 <p class="product-id">ID: @Model[j].ProductId</p>
-                                <p class="product-price">Full price: @(Model[j].Price)$</p>
+                                <p class="product-price">Full price: @(Model[j].Price)₪</p>
                                 <p class="product-price">Discounted price: @(Convert.ToInt32((Model[j].Price * (Convert.ToSingle(100 - Model[j].Discount) / 100))))$</p>
                                 <p class="product-Collection">Collection: @Model[j].Collection</p>
                                 <p class="product-Description">Description: @Model[j].Description</p>

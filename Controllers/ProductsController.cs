@@ -462,6 +462,14 @@ namespace ShopProject.Controllers
             return View("Edit",id);
         }
 
+        [HttpPost]
+        public IActionResult Delete(int id)
+        {
+            shop.DeleteItem(id, "Products");
+            return RedirectToAction("MyProducts");
+        }
+
+
         public IActionResult EditProducts(string id, string ChangePrice, string ChangeStock, string Section, string Discount)
         {
             ProductsModel product = shop.GetItemById("Products", int.Parse(id));

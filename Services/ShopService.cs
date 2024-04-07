@@ -136,6 +136,21 @@ namespace ShopProject.Services
                 }
             }
         }
+
+        public void DeleteItem(int id, string tableName)
+        {
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+
+                string sql = $"DELETE FROM {tableName} WHERE ProductId = @ProductId";
+                SqlCommand command = new SqlCommand(sql, connection);
+                command.Parameters.AddWithValue("@ProductId", id);
+                command.ExecuteNonQuery();
+            }
+        }
+
         public bool AddItemTo(dynamic item, string tableName)
         {
             int rowsAffected = 0;
@@ -380,6 +395,11 @@ namespace ShopProject.Services
 
             return item;
         }
+
+        //internal void DeleteItem(int id, string v)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
         public CartModel createCart(string userId)
         {
