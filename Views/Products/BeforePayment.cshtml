@@ -1,10 +1,12 @@
-﻿<head>
+﻿@model string;
+<head>
     <link rel="stylesheet" href="/css/custom.css" />
 </head>
 <body>
     <div class="container">
         <h1>Confirm Your Details:</h1>
         <form action="CheckOut" method="post" ;>
+            <input type="hidden" name="id" value="@Model" />
             <div class="row mb-4">
                 <div class="col">
                     <div data-mdb-input-init class="form-outline">
@@ -37,10 +39,7 @@
             <div data-mdb-input-init class="form-outline mb-4">
                 <input type="number" id="form6Example6" class="form-control" name="Phone" placeholder="Phone"required />
             </div>
-
-            
-            
-            
+            <input type="hidden" name="id" value="@Model" />
             <button data-mdb-ripple-init type="submit" class="btn btn-primary btn-block mb-4">Place order</button>
             <button type="button" class="btn btn-secondary btn-block" onclick="location.href='@Url.Action("Index", "Home")'">Back Home</button>
         </form>
