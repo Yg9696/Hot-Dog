@@ -220,16 +220,16 @@
                                 <p class="product-Description">Description: @Model[j].Description</p>
                                 <p class="product-Stock">In stock: @Model[j].Stock</p>
                                 <p class="product-DateReliesed">Date Reliesed: @Model[j].DateReliesed.ToString("dd/MM/yyyy")</p>
-                                <form action="Delete" method="post">
+                                @using (Html.BeginForm("Edit", "Products", FormMethod.Post))
+                                {
                                     <input type="hidden" name="id" value="@Model[j].ProductId" />
-
                                     <button type="submit" class="btn btn-primary add-to-cart-btn">Edit</button>
-                                </form>
-                                <form action="Delete" method="post">
+                                }
+                                @using (Html.BeginForm("Delete", "Products", FormMethod.Post))
+                                {
                                     <input type="hidden" name="id" value="@Model[j].ProductId" />
-
                                     <button type="submit" class="btn btn-danger delete-btn">Delete</button>
-                                </form>
+                                }
                             </div>
                         </div>
                     }
