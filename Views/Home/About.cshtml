@@ -26,6 +26,25 @@
         h1, p {
             text-align: center;
         }
+
+        .back-home-btn {
+            display: block;
+            width: 200px;
+            margin: 20px auto;
+            padding: 10px;
+            text-align: center;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+            .back-home-btn:hover {
+                background-color: #45a049;
+            }
     </style>
 </head>
 <body>
@@ -37,6 +56,7 @@
             Our shop allows you to browse through various products, view prices, add items to your cart, and enjoy many more options.
             With a passion for both technology and animals, we aim to provide a seamless shopping experience for all pet lovers.
         </p>
+        <button class="back-home-btn" onclick="window.location.href='/Home/Index'">Back Home</button>
     </div>
 </body>
 </html>

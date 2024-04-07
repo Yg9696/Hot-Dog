@@ -462,20 +462,32 @@ namespace ShopProject.Controllers
             return View("Edit",id);
         }
 
-            public IActionResult EditProducts(string id,string ChangePrice,string ChangeStock)
-            {
+        public IActionResult EditProducts(string id, string ChangePrice, string ChangeStock, string Section, string Discount)
+        {
             ProductsModel product = shop.GetItemById("Products", int.Parse(id));
-            if (product != null) {
-                if (ChangePrice != null) {
+            if (product != null)
+            {
+                if (!string.IsNullOrEmpty(ChangePrice))
+                {
                     product.Price = int.Parse(ChangePrice);
                 }
-                if (ChangeStock != null) { 
+                if (!string.IsNullOrEmpty(ChangeStock))
+                {
                     product.Stock = int.Parse(ChangeStock);
-            }
+                }               
+                if (!string.IsNullOrEmpty(Section))
+                {
+                    product.Collection = Section;
+                }               
+                if (!string.IsNullOrEmpty(Discount))
+                {
+                    product.Discount = int.Parse(Discount);
+                }
                 shop.UpdateItemFrom(product, "Products");
             }
             return View("Edit", int.Parse(id));
         }
+
 
         public IActionResult BuyNow(string id)
         {

@@ -1,4 +1,5 @@
-﻿@model int ;
+﻿@model int;
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,10 +7,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Product</title>
     <link rel="stylesheet" href="/css/custom.css" />
+    <style>
+        .form-outline {
+            margin-bottom: 1rem;
+        }
+
+        .form-control {
+            border-radius: 10px;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <h1> product name:</h1>
+        <h1>Product Name:</h1>
         <form id="editProductForm" action="/Products/EditProducts" method="post">
             <div class="row mb-4">
                 <div class="col">
@@ -24,7 +34,18 @@
                     </div>
                 </div>
             </div>
-
+            <div class="row mb-4">
+                <div class="col">
+                    <div data-mdb-input-init class="form-outline">
+                        <input type="text" id="section" class="form-control" name="Section" placeholder="Section" />
+                    </div>
+                </div>
+                <div class="col">
+                    <div data-mdb-input-init class="form-outline">
+                        <input type="text" id="discount" class="form-control" name="Discount" placeholder="Discount" />
+                    </div>
+                </div>
+            </div>
             <button type="submit" class="btn btn-primary btn-block mb-4">Save Changes</button>
             <button type="button" class="btn btn-secondary btn-block" onclick="location.href='@Url.Action("Admin", "Home")'">Back Home</button>
         </form>
