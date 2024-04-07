@@ -338,7 +338,7 @@ namespace ShopProject.Controllers
         {
             return View("BeforePayment");
         }
-        public IActionResult ToPayment(string id,string CardHolderName, string CreditNumber, string CreditCVC, string ExpiryDateMonth, string ExpiryDateYear)
+        public IActionResult ToPayment(int id,string CardHolderName, string CreditNumber, string CreditCVC, string ExpiryDateMonth, string ExpiryDateYear)
         {
             string userJson = HttpContext.Session.GetString("CurrentAccount");
             AccountModel currentAccount = null;
@@ -369,15 +369,16 @@ namespace ShopProject.Controllers
                     command.Parameters.AddWithValue("@IV", IV);
                     command.Parameters.AddWithValue("@KeyIdentifier", encryptionKey);
                     command.ExecuteNonQuery();
+
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Error saving encrypted credit card: " + ex.Message);
             }
-            return RedirectToAction("Recipt","Products",id);
+            return RedirectToAction("Recipt", "Products", new { id = id });
         }
-        public IActionResult Recipt(string id)
+        public IActionResult Recipt(int id)
         {
             string userJson = HttpContext.Session.GetString("CurrentAccount");
             AccountModel currentAccount = null;
@@ -392,7 +393,7 @@ namespace ShopProject.Controllers
             
             if (currentAccount != null)
             {
-                if (id != null)
+                if (id == 0)
                 {
                     var shopListProductIds = shop.GetListOf("ShopList")
                                  .Where(p => int.Parse(p.UserId) == currentAccount.UserID)
@@ -407,10 +408,20 @@ namespace ShopProject.Controllers
                         if (listTemp[0] == null) { listTemp = null; }
                     }
                 }
-                else { listTemp.Add(shop.GetItemById("Products", int.Parse(id))); }
+                else {
+                    listTemp.Add(shop.GetItemById("Products", id));
+                    ProductsModel product = (ProductsModel)shop.GetItemById("Products", id);
+
+                    // Update stock immediately
+                    if (product.Stock > 0)
+                    {
+                        product.Stock--;
+                        shop.UpdateItemFrom(product, "Products");
+                    }
+                }
 
             }
-            if (id != null)
+            if (id == 0)
             {
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 {
@@ -485,7 +496,12 @@ namespace ShopProject.Controllers
             }
             return View("MyProducts", list.Where(p => p.Collection == collection).ToList());
         }
-        public IActionResult deleteFromCart(int itemId)
+       /* public IActionResult deleteProduct(int itemId)
+        {
+            
+        }*/
+        
+            public IActionResult deleteFromCart(int itemId)
         {
             string userJson = HttpContext.Session.GetString("CurrentAccount");
             AccountModel currentAccount = null;
