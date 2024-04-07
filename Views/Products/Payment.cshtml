@@ -86,10 +86,7 @@
     <div class="container">
         <div class="payment-form">
             <form asp-controller="Products" asp-action="ToPayment" accept-charset="UTF-8" class="require-validation" data-cc-on-file="false" data-stripe-publishable-key="pk_bQQaTxnaZlzv4FnnuZ28LFHccVSaj" id="payment-form" method="post">
-                @if (Model.Count() == 1)
-                {
-                    <input type="hidden" name="id" value="@Model[0].ProductId.ToString()" />
-                }
+                
                 <div class='form-group required'>
                     <label class='control-label'>Name on Card</label>
                     <input name="CardHolderName" class='form-control' size='4' type='text'required>
@@ -128,6 +125,11 @@
                 </form>
                 <div class='form-group'>
                 <form asp-controller="Products" asp-action="ToPayment" method="post">
+                    @if (Model.Count() == 1)
+                    {
+
+                        <input type="hidden" name="id" value=@Model[0].ProductId />
+                    }
                     <button type="submit" class='btn btn-primary btn-block'>Pay »</button>
                     </form>
                 </div>
