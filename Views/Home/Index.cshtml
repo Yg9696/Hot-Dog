@@ -1,5 +1,7 @@
-﻿@model List<ProductsModel>
-
+﻿@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+@model List<ProductsModel>
+@inject IHttpContextAccessor HttpContextAccessor;
 @{
     ViewData["Title"] = "Home Page";
 }
@@ -38,7 +40,31 @@
                             <li><a class="dropdown-item" href="#!">Popular Items</a></li>
                             <li><a class="dropdown-item" href="#!">New Arrivals</a></li>
                         </ul>
+
                     </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Updates</a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    @{
+
+                        List<ProductsModel> notifyList = JsonConvert.DeserializeObject<List<ProductsModel>>(HttpContextAccessor.HttpContext.Session.GetString("NotifyList"));
+                    }
+
+                    @if (notifyList != null)
+                    {
+                        foreach (ProductsModel p in notifyList)
+                        {
+                            <li><a class="dropdown-item" href="#!">The product "@p.ProductName" is back in stock</a></li>
+                        }
+                    }
+                    else
+                    {
+                        
+                    }
+                        </ul>
+
+                    </li>
+
                 </ul>
                 <form asp-controller="Products" asp-action="Cart" method="post" class="d-flex mr-2">
                     <button class="btn btn-outline-dark" type="submit">
@@ -59,7 +85,7 @@
             </div>
         </div>
     </nav>
-
+    
     <section class="py-5">
         <div class="container px-4 px-lg-5 mt-5">
             <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
