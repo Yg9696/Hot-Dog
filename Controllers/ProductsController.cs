@@ -508,12 +508,12 @@ namespace ShopProject.Controllers
             }
             return View("MyProducts", list.Where(p => p.Collection == collection).ToList());
         }
-       /* public IActionResult deleteProduct(int itemId)
+        /*public IActionResult deleteProduct(int itemId)
         {
-            
+
         }*/
-        
-            public IActionResult deleteFromCart(int itemId)
+
+        public IActionResult deleteFromCart(int itemId)
         {
             string userJson = HttpContext.Session.GetString("CurrentAccount");
             AccountModel currentAccount = null;
