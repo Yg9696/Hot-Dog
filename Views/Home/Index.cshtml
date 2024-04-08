@@ -6,6 +6,22 @@
     ViewData["Title"] = "Home Page";
 }
 
+@functions {
+    public string GetBackgroundImage(string collection)
+    {
+        switch (collection.ToLower())
+        {
+            case "אביזרים":
+                return "/cart.jpg";
+            case "chair":
+                return "path/to/chair-image.jpg";
+            // Add more cases for other collections as needed
+            default:
+                return "default-background.jpg"; // Default background image path
+        }
+    }
+}
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -15,7 +31,7 @@
     <meta name="description" content="" />
     <meta name="author" content="" />
     <title>Shop Homepage - Start Bootstrap Template</title>
-    <link rel="stylesheet" href="~/css/HomePage.css"> 
+    <link rel="stylesheet" href="~/css/HomePage.css">
 </head>
 <body>
     <div class="text-center">
@@ -43,22 +59,22 @@
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Updates</a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    @{
+                            @{
 
-                        List<ProductsModel> notifyList = JsonConvert.DeserializeObject<List<ProductsModel>>(HttpContextAccessor.HttpContext.Session.GetString("NotifyList"));
-                    }
+                                List<ProductsModel> notifyList = JsonConvert.DeserializeObject<List<ProductsModel>>(HttpContextAccessor.HttpContext.Session.GetString("NotifyList"));
+                            }
 
-                    @if (notifyList != null)
-                    {
-                        foreach (ProductsModel p in notifyList)
-                        {
-                            <li><a class="dropdown-item" href="#!">The product "@p.ProductName" is back in stock</a></li>
-                        }
-                    }
-                    else
-                    {
-                        
-                    }
+                            @if (notifyList != null)
+                            {
+                                foreach (ProductsModel p in notifyList)
+                                {
+                                    <li><a class="dropdown-item" href="#!">The product "@p.ProductName" is back in stock</a></li>
+                                }
+                            }
+                            else
+                            {
+
+                            }
                         </ul>
 
                     </li>
@@ -83,13 +99,13 @@
             </div>
         </div>
     </nav>
-    
+
     <section class="py-5">
         <div class="container px-4 px-lg-5 mt-5">
             <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
                 @foreach (var col in Model.Select(obj => obj.Collection).Distinct().ToList())
                 {
-                    <div class="col mb-5">
+                    <div class="col mb-5 collection-section" style="background-image: url('@GetBackgroundImage(col)')">
                         <div class="card h-100">
                             <div class="card-body p-4">
                                 <div class="text-center">
@@ -109,26 +125,28 @@
                         </div>
                     </div>
                 }
+
+
             </div>
         </div>
-        
+
     </section>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 
-    
+
     <script src="js/scripts.js"></script>
     <script>
-        var notifyList = HttpContext.Session.GetObject<User>("NotifyList");
+        var notifyList = HttpContext.Session.GetObject < User > ("NotifyList");
         function showAlert() {
-            String message="the following products are back in stock again!:";
-            for (var i in notifyList){
-                message+=notifyList.
-            }
+            String message = "the following products are back in stock again!:";
+            for (var i in notifyList) {
+                message += notifyList.
+                }
             alert('Welcome to our website!');
-            
+
         }
 
-       
+
         window.onload = showAlert;
 
     </script>
