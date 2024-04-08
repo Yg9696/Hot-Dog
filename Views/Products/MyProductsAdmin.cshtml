@@ -225,7 +225,7 @@
                                     <input type="hidden" name="id" value="@Model[j].ProductId" />
                                     <button type="submit" class="btn btn-primary add-to-cart-btn">Edit</button>
                                 }
-                                @using (Html.BeginForm("Delete", "Products", FormMethod.Post))
+                                @using (Html.BeginForm("deleteProduct", "Products", FormMethod.Post))
                                 {
                                     <input type="hidden" name="id" value="@Model[j].ProductId" />
                                     <button type="submit" class="btn btn-danger delete-btn">Delete</button>
