@@ -117,20 +117,16 @@ namespace ShopProject.Controllers
                 currentAccount = JsonConvert.DeserializeObject<AccountModel>(userJson);
             }
 
-            // Add item to user's shopping cart
             shop.AddItemTo(new { UserId = currentAccount.UserID, ProductId = productId }, "ShopList");
 
-            // Retrieve product from shop by productId
             ProductsModel product = (ProductsModel)shop.GetItemById("Products", productId);
 
-            // Update stock immediately
             if (product.Stock > 0)
             {
                 product.Stock--;
                 shop.UpdateItemFrom(product, "Products");
             }
 
-            // Return JSON response with updated stock value
             return Json(new { updatedStock = product.Stock });
         }
 
