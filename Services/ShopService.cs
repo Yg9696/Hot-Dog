@@ -91,9 +91,10 @@ namespace ShopProject.Services
                                         AgeLimit = reader.GetInt32(reader.GetOrdinal("AgeLimit")),
                                         Discount = reader.GetInt32(reader.GetOrdinal("discount")),
                                         NumOfOrders = reader.GetInt32(reader.GetOrdinal("NumOfOrders")),
-                                        DateReliesed = reader.GetDateTime(reader.GetOrdinal("DateReliesed"))
+                                        DateReliesed = reader.GetDateTime(reader.GetOrdinal("DateReliesed")),
+                                        Image = reader.GetString(reader.GetOrdinal("Image"))
 
-                            };
+                                    };
                                     break;
                                 case "shoplist":
                                     item = new
@@ -167,7 +168,7 @@ namespace ShopProject.Services
                         switch (tableName)//#####
                         {
                             case "Products":
-                                sqlQueryInit = $"CREATE TABLE {tableName}(ProductId INT PRIMARY KEY IDENTITY, ProductName VARCHAR(30), Price INT, Collection VARCHAR(100), Description VARCHAR(255), Stock INT,AgeLimit INT DEFAULT NULL ,Discount INT DEFAULT 0,NumOfOrders INT DEFAULT 0,DateReliesed DATE)";
+                                sqlQueryInit = $"CREATE TABLE {tableName}(ProductId INT PRIMARY KEY IDENTITY, ProductName VARCHAR(30), Price INT, Collection VARCHAR(100), Description VARCHAR(255), Stock INT,AgeLimit INT DEFAULT NULL ,Discount INT DEFAULT 0,NumOfOrders INT DEFAULT 0,DateReliesed DATE,Image VARCHAR(255) DEFAULT NULL)";
                                 break;
                             case "Users":
                                 sqlQueryInit = $"CREATE TABLE {tableName}(Id INT PRIMARY KEY IDENTITY,UserName VARCHAR(30) PRIMARY KEY, Password VARCHAR(30))";
@@ -203,6 +204,7 @@ namespace ShopProject.Services
                             command.Parameters.AddWithValue("@ageLimit", item.AgeLimit);
                             command.Parameters.AddWithValue("@discount", item.Discount);
                             command.Parameters.AddWithValue("@DateReliesed", item.DateReliesed);
+                            command.Parameters.AddWithValue("@Image", item.Image);
 
                             break;
                         case "Users":
@@ -265,7 +267,8 @@ namespace ShopProject.Services
                         AgeLimit = @ageLimit,
                         Discount = @discount,
                         NumOfOrders= @NumOfOrders,
-                        DateReliesed = @DateReliesed
+                        DateReliesed = @DateReliesed,
+                        Image=@Image
                     WHERE ProductId = @id";
 
                         using (SqlCommand command = new SqlCommand(sqlQueryUpdate, connection))
@@ -280,7 +283,7 @@ namespace ShopProject.Services
                             command.Parameters.AddWithValue("@discount", item.Discount);
                             command.Parameters.AddWithValue("@NumOfOrders", item.NumOfOrders);
                             command.Parameters.AddWithValue("@DateReliesed", item.DateReliesed);
-                            
+                            command.Parameters.AddWithValue("@Image", item.Image);
 
                             rowsAffected = command.ExecuteNonQuery();
                         }
