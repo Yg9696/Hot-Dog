@@ -50,9 +50,9 @@
                                                 </div>
                                             </div>
                                         </td>
-                                        <td class="text-right font-weight-semibold align-middle p-4">@product.Price.ToString("C")</td>
-                                        <td class="text-center align-middle p-4">Units: 1</td> 
-                                        <td class="text-right font-weight-semibold align-middle p-4">@product.Price.ToString("C")</td>
+                                        <td class="text-right font-weight-semibold align-middle p-4">@((product.Price * (100 - product.Discount) / 100).ToString("C"))</td>
+                                        <td class="text-center align-middle p-4">Units: 1</td>
+                                        <td class="text-right font-weight-semibold align-middle p-4">@((product.Price * (100 - product.Discount) / 100).ToString("C"))</td>
                                         <td class="text-center align-middle px-0">
                                             <a asp-controller="Products" asp-action="deleteFromCart" asp-route-itemId="@product.ProductId" class="shop-tooltip close float-none text-danger" title="Remove">×</a>
                                         </td>
@@ -69,7 +69,7 @@
                     decimal totalPrice = 0;
                     if (Model != null)
                     {
-                         totalPrice = Model.Sum(p => p.Price);
+                        totalPrice = Model.Sum(p => { return (p.Price * (100 - p.Discount) / 100); });
                     }
                 }
             

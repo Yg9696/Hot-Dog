@@ -264,6 +264,7 @@ namespace ShopProject.Services
                         Stock = @stock,
                         AgeLimit = @ageLimit,
                         Discount = @discount,
+                        NumOfOrders= @NumOfOrders,
                         DateReliesed = @DateReliesed
                     WHERE ProductId = @id";
 
@@ -277,7 +278,9 @@ namespace ShopProject.Services
                             command.Parameters.AddWithValue("@stock", item.Stock);
                             command.Parameters.AddWithValue("@ageLimit", item.AgeLimit);
                             command.Parameters.AddWithValue("@discount", item.Discount);
+                            command.Parameters.AddWithValue("@NumOfOrders", item.NumOfOrders);
                             command.Parameters.AddWithValue("@DateReliesed", item.DateReliesed);
+                            
 
                             rowsAffected = command.ExecuteNonQuery();
                         }
