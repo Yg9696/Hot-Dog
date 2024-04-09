@@ -6,7 +6,7 @@
     ViewData["Title"] = "Home Page";
 }
 
-@functions {
+@*@functions {
     public string GetBackgroundImage(string collection)
     {
         switch (collection.ToLower())
@@ -15,12 +15,11 @@
                 return "/cart.jpg";
             case "chair":
                 return "path/to/chair-image.jpg";
-            // Add more cases for other collections as needed
             default:
-                return "default-background.jpg"; // Default background image path
+                return "default-background.jpg"; 
         }
     }
-}
+}*@
 
 
 <!DOCTYPE html>
@@ -105,7 +104,7 @@
             <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
                 @foreach (var col in Model.Select(obj => obj.Collection).Distinct().ToList())
                 {
-                    <div class="col mb-5 collection-section" style="background-image: url('@GetBackgroundImage(col)')">
+                    <div class="col mb-5 collection-section"> @*style="background-image: url('@GetBackgroundImage(col)')">*@
                         <div class="card h-100">
                             <div class="card-body p-4">
                                 <div class="text-center">
