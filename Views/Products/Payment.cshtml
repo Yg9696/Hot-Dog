@@ -85,28 +85,28 @@
 <body>
     <div class="container">
         <div class="payment-form">
-            <form asp-controller="Products" asp-action="ToPayment" accept-charset="UTF-8" class="require-validation" data-cc-on-file="false" data-stripe-publishable-key="pk_bQQaTxnaZlzv4FnnuZ28LFHccVSaj" id="payment-form" method="post">
-                
+            <form id="payment-form" asp-controller="Products" asp-action="ToPayment" accept-charset="UTF-8" class="require-validation" data-cc-on-file="false" data-stripe-publishable-key="pk_bQQaTxnaZlzv4FnnuZ28LFHccVSaj" method="post">
                 <div class='form-group required'>
                     <label class='control-label'>Name on Card</label>
-                    <input name="CardHolderName" class='form-control' size='4' type='text'required>
+                    <input name="CardHolderName" class='form-control' size='4' type='text' pattern="[A-Za-z\s]+" title="Please enter only letters and spaces" required>
                 </div>
                 <div class='form-group card required'>
                     <label class='control-label'>Card Number</label>
-                    <input autocomplete='off' name="CreditNumber" class='form-control card-number' size='20' type='text'required>
+                    <input autocomplete='off' name="CreditNumber" class='form-control card-number' size='20' type='text' pattern="\d{16}" title="Please enter 16 digits" required>
                 </div>
                 <div class='form-group cvc required'>
                     <label class='control-label'>CVC</label>
-                    <input autocomplete='off' name="CreditCVC" class='form-control card-cvc' placeholder='ex. 311' size='4' type='text'required>
+                    <input autocomplete='off' name="CreditCVC" class='form-control card-cvc' placeholder='ex. 311' size='4' type='text' pattern="\d{3}" title="Please enter 3 digits" required>
                 </div>
                 <div class='form-group expiration required'>
                     <label class='control-label'>Expiration</label>
-                    <input class='form-control card-expiry-month' name="ExpiryDateMonth" placeholder='MM' size='2' type='text'required>
+                    <input class='form-control card-expiry-month' name="ExpiryDateMonth" placeholder='MM' size='2' type='text' pattern="(0[1-9]|1[0-2])" title="Please enter a valid month (01-12)" required>
                 </div>
                 <div class='form-group expiration required'>
                     <label class='control-label'> </label>
-                    <input class='form-control card-expiry-year' name="ExpiryDateYear" placeholder='YYYY' size='4' type='text'required>
+                    <input class='form-control card-expiry-year' name="ExpiryDateYear" placeholder='YYYY' size='4' type='number' min="2024" max="2032" title="Please enter a year between 2024 and 2032" required>
                 </div>
+
                 @{
                     decimal totalPrice = 0;
                     if (Model != null)
@@ -114,36 +114,50 @@
                         totalPrice = Model.Sum(p=>{ return (p.Price * (100 - p.Discount) / 100); });
                     }
                 }
-
-
                 <div class='form-group'>
                     <div class='total btn btn-info'>
                         Total:
                         <span class='amount'>@totalPrice.ToString("C")</span>
                     </div>
                 </div>
-                </form>
                 <div class='form-group'>
-                <form asp-controller="Products" asp-action="ToPayment" method="post">
-                    @if (Model.Count() == 1)
-                    {
-
-                        <input type="hidden" name="id" value=@Model[0].ProductId />
-                    }
-                    <button type="submit" class='btn btn-primary btn-block'>Pay »</button>
-                    </form>
+                    <button id="pay-btn" type="submit" class='btn btn-primary btn-block'>Pay »</button>
                 </div>
                 <div class='form-group'>
                     <a href="/Home/Index" class='btn btn-secondary btn-block'>Back Home</a>
                 </div>
-
                 <div class='form-group error hide'>
                     <div class='alert-danger alert'>
                         Please correct the errors and try again.
                     </div>
                 </div>
-            
+            </form>
         </div>
     </div>
 </body>
 </html>
+<script>
+    document.getElementById('payment-form').addEventListener('submit', function (event) {
+        var form = event.target;
+        var requiredFields = form.querySelectorAll('[required]');
+        var isValid = true;
+
+        requiredFields.forEach(function (field) {
+            if (!field.value.trim()) {
+                isValid = false;
+                // Add error styling to the field
+                field.classList.add('is-invalid');
+            } else {
+                // Remove error styling if field is filled
+                field.classList.remove('is-invalid');
+            }
+        });
+
+        if (!isValid) {
+            // Prevent form submission if any required field is empty
+            event.preventDefault();
+            // Display error message or take other actions
+            alert('Please fill out all required fields.');
+        }
+    });
+</script>

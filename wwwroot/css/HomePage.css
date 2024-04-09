@@ -97,6 +97,26 @@ body {
 }
 
 
+.collection-section {
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    position: relative;
+}
+
+.card {
+    position: relative;
+    z-index: 1; /* Ensure the card content is above the background image */
+}
+
+
+
+
+/* Add more styles for other collections as needed */
+
+
+
+
 hr {
     margin: 1rem 0;
     color: inherit;

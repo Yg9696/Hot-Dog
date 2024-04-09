@@ -353,11 +353,11 @@ namespace ShopProject.Controllers
             var IV = KeyGenerator.GenerateRandomIV(16);
             try
             {
-                // Encrypt the credit card number
+                
                 string encryptedCardNumber = EncryptString(CardHolderName, encryptionKey, IV);
                 string encryptedCreditCVC = EncryptString(CreditCVC, encryptionKey, IV);
                 string encryptedExpiryDate = EncryptString(ExpiryDateMonth + "/" + ExpiryDateYear, encryptionKey, IV);
-                // Save the encrypted credit card number to SQL Server
+                
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 {
                     connection.Open();
@@ -417,6 +417,7 @@ namespace ShopProject.Controllers
                 else {
                     listTemp.Add(shop.GetItemById("Products", id));
                     ProductsModel product = (ProductsModel)shop.GetItemById("Products", id);
+
                     if (product.Stock > 0)
                     {
                         product.NumOfOrders++;
@@ -467,6 +468,14 @@ namespace ShopProject.Controllers
         {
             return View("Edit",id);
         }
+
+        [HttpPost]
+        public IActionResult Delete(int id)
+        {
+            shop.DeleteItem(id, "Products");
+            return RedirectToAction("MyProducts");
+        }
+
 
         public IActionResult EditProducts(string id, string ChangePrice, string ChangeStock, string Section, string Discount)
         {

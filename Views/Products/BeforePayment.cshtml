@@ -5,44 +5,45 @@
 <body>
     <div class="container">
         <h1>Confirm Your Details:</h1>
-        <form action="CheckOut" method="post" ;>
+        <form action="CheckOut" method="post">
             <input type="hidden" name="id" value="@Model" />
             <div class="row mb-4">
                 <div class="col">
                     <div data-mdb-input-init class="form-outline">
-                        <input type="text" id="form6Example1" class="form-control" name="FirstName" placeholder="First name"required />
+                        <input type="text" id="form6Example1" class="form-control" name="FirstName" placeholder="First name" pattern="[A-Za-z]+" title="Please enter only letters" required />
                     </div>
                 </div>
                 <div class="col">
                     <div data-mdb-input-init class="form-outline">
-                        <input type="text" id="form6Example2" class="form-control" name="LastName" placeholder="Last name"required />
+                        <input type="text" id="form6Example2" class="form-control" name="LastName" placeholder="Last name" pattern="[A-Za-z]+" title="Please enter only letters" required />
                     </div>
                 </div>
             </div>
 
-           
+
             <div data-mdb-input-init class="form-outline mb-4">
-                <input type="text" id="form6Example3" class="form-control" name="Age" placeholder="Age"required />
+                <input type="number" id="form6Example3" class="form-control" name="Age" placeholder="Age" min="0" max="120" title="Age must be between 0 and 120" required />
             </div>
 
-            
+
             <div data-mdb-input-init class="form-outline mb-4">
-                <input type="text" id="form6Example4" class="form-control" name="Address" placeholder="Address"required />
+                <input type="text" id="form6Example4" class="form-control" name="Address" placeholder="Address" required />
             </div>
 
-            
+
             <div data-mdb-input-init class="form-outline mb-4">
-                <input type="email" id="form6Example5" class="form-control" name="Email" placeholder="Email"required />
+                <input type="email" id="form6Example5" class="form-control" name="Email" placeholder="Email" required />
             </div>
 
-           
+
             <div data-mdb-input-init class="form-outline mb-4">
-                <input type="number" id="form6Example6" class="form-control" name="Phone" placeholder="Phone"required />
+                <input type="tel" id="form6Example6" class="form-control" name="Phone" placeholder="Phone" pattern="05\d{8}" title="Phone number must start with '05' and have 10 digits" required />
             </div>
             <input type="hidden" name="id" value="@Model" />
             <button data-mdb-ripple-init type="submit" class="btn btn-primary btn-block mb-4">Place order</button>
             <button type="button" class="btn btn-secondary btn-block" onclick="location.href='@Url.Action("Index", "Home")'">Back Home</button>
         </form>
     </div>
+
 </body>
 
