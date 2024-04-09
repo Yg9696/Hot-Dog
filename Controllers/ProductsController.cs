@@ -191,7 +191,7 @@ namespace ShopProject.Controllers
                             listTemp = listTemp.OrderBy(l => l.ProductName).ToList();
                             break;
                         case "price":
-                            listTemp = listTemp.OrderBy(l => l.Price).ToList();
+                            listTemp = listTemp.OrderBy(l =>  (l.Price * (Convert.ToSingle(100 - l.Discount) / 100))).ToList();
                             break;
                         case "collection":
                             listTemp = listTemp.OrderBy(l => l.Collection).ToList();
@@ -219,7 +219,7 @@ namespace ShopProject.Controllers
                             listTemp = listTemp.OrderByDescending(l => l.ProductName).ToList();
                             break;
                         case "price":
-                            listTemp = listTemp.OrderByDescending(l => l.Price).ToList();
+                            listTemp = listTemp.OrderByDescending(l => (l.Price * (Convert.ToSingle(100 - l.Discount) / 100))).ToList();
                             break;
                         case "collection":
                             listTemp = listTemp.OrderByDescending(l => l.Collection).ToList();
@@ -259,8 +259,9 @@ namespace ShopProject.Controllers
 
             return View("MyProducts", listTemp);
         }
-        public  IActionResult NotifyMe(int productId)
+        public  IActionResult NotifyMe(string productId)
         {
+           
             string userJson = HttpContext.Session.GetString("CurrentAccount");
             AccountModel currentAccount = null;
 
@@ -268,7 +269,7 @@ namespace ShopProject.Controllers
             {
                 currentAccount = JsonConvert.DeserializeObject<AccountModel>(userJson);
             }
-            shop.AddItemTo(new { UserId = currentAccount.UserID, ProductId = productId }, "NotifyList");
+            shop.AddItemTo(new { UserId = currentAccount.UserID, ProductId = int.Parse(productId) }, "NotifyList");
             return Ok();
             
         }
@@ -407,20 +408,24 @@ namespace ShopProject.Controllers
                         listTemp.Add(list.Find(product => product.ProductId == p));
                         if (listTemp[0] == null) { listTemp = null; }
                     }
+                    foreach(ProductsModel p in listTemp)
+                    {
+                        p.NumOfOrders++;
+                        shop.UpdateItemFrom(p, "Products");
+                    }
                 }
                 else {
                     listTemp.Add(shop.GetItemById("Products", id));
                     ProductsModel product = (ProductsModel)shop.GetItemById("Products", id);
-
-                    // Update stock immediately
                     if (product.Stock > 0)
                     {
-                        product.Stock--;
+                        product.NumOfOrders++;
                         shop.UpdateItemFrom(product, "Products");
                     }
                 }
 
             }
+
             if (id == 0)
             {
                 using (SqlConnection connection = new SqlConnection(connectionString))
@@ -452,6 +457,7 @@ namespace ShopProject.Controllers
                     }
                 }
             }
+            
             receipt.Products = listTemp;
             receipt.CurrentAccount= currentAccount;
             return View("Receipt", receipt);
