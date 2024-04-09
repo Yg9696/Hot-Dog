@@ -227,17 +227,7 @@ namespace ShopProject.Services
                     }
                     command.CommandText = sqlQueryAdd;
                     rowsAffected = command.ExecuteNonQuery();
-                    //if (tableName =="Products")
-                    //{
-                    //    sqlQueryAdd = $"INSERT INTO Images VALUES(@ImagePath,@ProductId)";
-                    //    foreach (string imagePath in item.PicturesPaths)
-                    //    {
-                    //        command.Parameters.AddWithValue("@ImagePath", imagePath);
-                    //        command.Parameters.AddWithValue("@ProductId", item.ProductId);
-                    //        command.CommandText = sqlQueryAdd;
-                    //        command.ExecuteNonQuery();
-                    //    }
-                    //}
+                   
                 }
             }
 
@@ -370,8 +360,8 @@ namespace ShopProject.Services
                                     AgeLimit = reader.GetInt32(reader.GetOrdinal("AgeLimit")),
                                     Discount = reader.GetInt32(reader.GetOrdinal("discount")),
                                     NumOfOrders = reader.GetInt32(reader.GetOrdinal("NumOfOrders")),
-                                    DateReliesed = reader.GetDateTime(reader.GetOrdinal("DateReliesed"))
-
+                                    DateReliesed = reader.GetDateTime(reader.GetOrdinal("DateReliesed")),
+                                    Image = reader.GetString(reader.GetOrdinal("Image"))
                                 };
                                 break;
                             case "Users":
