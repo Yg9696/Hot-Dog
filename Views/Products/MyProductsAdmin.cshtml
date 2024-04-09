@@ -244,27 +244,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <!-- JavaScript code -->
-    <script>
-        $(document).ready(function () {
-            $('.add-to-cart-btn').click(function () {
-                var productId = $(this).closest('.product-card').data('product-id');
-
-                $.ajax({
-                    url: '/Products/AddToCart', // Update the URL to match your controller and action
-                    type: 'POST',
-                    data: { productId: productId },
-                    success: function (response) {
-                        $('.product-card[data-product-id="' + productId + '"] .product-Stock').text('In stock: ' + response.updatedStock);
-                        alert('Product added to cart successfully!');
-                    },
-                    error: function (xhr, status, error) {
-                        console.error(xhr.responseText);
-                        alert('Failed to add product to cart.');
-                    }
-                });
-            });
-        });
-    </script>
+    
 </body>
 </html>
 

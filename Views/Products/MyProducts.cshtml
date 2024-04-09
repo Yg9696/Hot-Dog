@@ -232,55 +232,6 @@
         </div>
     </div>
 
-
-
-
-    @*@using (Html.BeginForm("FilteredProducts", "Products", FormMethod.Post))
-        {
-            <div class="search-container">
-                <input name="searchedInput" type="text" placeholder="Search for products...">
-                <button>Search</button>
-            </div>
-        }
-
-
-        @using (Html.BeginForm("SortProducts", "Products", FormMethod.Post))
-        {
-            <div class="filter-sort-container">
-                <select id="sortOptions" name="selectedFilter">
-                    <option value="" disabled selected>Select Filter</option>
-                    <option value="name">Sort by Name</option>
-                    <option value="price">Sort by Price</option>
-                    <option value="collection">Filter by Collection</option>
-                    <option value="stock">Filter by Stock</option>
-                    <option value="Popularity">Filter by Popularity</option>
-                    <option value="DateModified">Filter by Reliesed Date </option>
-                </select>
-                <button name="sign" value="down" type="submit">Sort down</button>
-                <button name="sign" value="up" type="submit">Sort up</button>
-            </div>
-        }
-
-        @using (Html.BeginForm("SortProducts", "Products", FormMethod.Post))
-        {
-            <div class="price-range-container">
-                <label for="minPrice">Search from price:</label>
-                <input name="minPrice" type="number" placeholder="Min price" step="10" min="0">
-
-                <label for="maxPrice">To price:</label>
-                <input name="maxPrice" type="number" placeholder="Max price" step="10" min="0">
-
-                <button name="sign" value="Search" type="submit">Search</button>
-                @if (TempData["AlertMessage"] != null)
-                {
-                    <label>@TempData["AlertMessage"]</label>
-                    TempData["AlertMessage"] = null;
-
-                }
-            </div>
-        }*@
-
-
     <section class="py-5">
         <div class="container px-4 px-lg-5 mt-5">
             @for (int i = 0; i < Model.Count; i += 4)
@@ -302,7 +253,10 @@
                                 @if (Model[j].Stock <= 0)
                                 {
                                     <p class="out-of-stock-message">Out of stock</p>
-                                    <button type="button" class="btn btn-primary" onclick="notifyMe('@Model[j].ProductId')">Notify Me</button>
+                                    <form class="notify-form" data-product-id="@Model[j].ProductId">
+                                    <input type="hidden" name="productId" value="@Model[j].ProductId">
+                                    <button type="button" class="btn btn-primary notify-btn">Notify Me</button>
+                                </form>
                                 }
                                 else
                                 {
@@ -344,6 +298,27 @@
                 });
             });
         });
+            $(document).ready(function () {
+                $('.notify-btn').click(function () {
+                    var form = $(this).closest('.notify-form');
+                    var productId = form.data('product-id');
+
+                    $.ajax({
+                        url: '/Products/NotifyMe',
+                        type: 'POST',
+                        data: form.serialize(), // Serialize form data
+                        success: function (response) {
+                            // Handle success
+                            $('#notify-form-container-' + productId).html('<p>Notification sent successfully!</p>');
+                        },
+                        error: function (xhr, status, error) {
+                            // Handle error
+                            $('#notify-form-container-' + productId).html('<p>Error: Failed to send notification.</p>');
+                        }
+                    });
+                });
+            });
+    
     </script>
 </body>
 </html>

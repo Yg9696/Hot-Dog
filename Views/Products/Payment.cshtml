@@ -111,7 +111,7 @@
                     decimal totalPrice = 0;
                     if (Model != null)
                     {
-                        totalPrice = Model.Sum(p => p.Price);
+                        totalPrice = Model.Sum(p=>{ return (p.Price * (100 - p.Discount) / 100); });
                     }
                 }
 
