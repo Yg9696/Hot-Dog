@@ -20,8 +20,9 @@ namespace ShopProject.Models
         public int AgeLimit { get; set; } = 0;
         public int Discount { get; set; } = 0;
         public int NumOfOrders { get; set; } = 0;
-        public DateTime DateReliesed { get; set; } 
-        public int units { get; set; }
+        public DateTime DateReliesed { get; set; }
+        public int Units { get; set; }
+        public string Image { get; set; }
 
 
 
