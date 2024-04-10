@@ -110,8 +110,8 @@ namespace ShopProject.Controllers
                 {
                     if (!UserExistsInDatabase(user.UserName, user.Password))
                     {
-
-                        return View("Register");
+                        ModelState.AddModelError(string.Empty, "Invalid username or password. Please sign up first.");
+                        return View("LoginPage", user);
                     }
                     else
                     {
@@ -128,23 +128,6 @@ namespace ShopProject.Controllers
                 }
             }
         }
-
-        //public IActionResult Register(AccountModel user)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-
-        //        AddAccountToDataBase( user.FirstName, user.LastName, user.Email, user.PhoneNumber, user.UserName,user.Age, user.Password);
-
-
-        //    return RedirectToAction("Index");
-        //}
-        //    else
-        //    {
-
-        //        return View("Register", user);
-        //    }
-        //}
 
         public IActionResult Register(AccountModel user)
         {
