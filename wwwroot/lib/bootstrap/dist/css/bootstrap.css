@@ -705,7 +705,7 @@ progress {
   color: #919aa1;
 }
 .blockquote-footer::before {
-  content: "— ";
+  content: "ï¿½ï¿½";
 }
 
 .img-fluid {
